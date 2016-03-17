@@ -28,10 +28,10 @@ For more details, on how to setup HTTPS on SonarQube, please see [Securing the S
 2. In **Reply URL**, remove the existing URL. Add SonarQube Server URL and append `https://<SonarQube_ServerURL>/oauth2/callback`, example `https://localhost:9090/oauth2/callback`
 3. Under the **keys** section, create a key for your application with 1 year expiry duration.
 4. Under **Permissions to other applications** section, make sure the application has access to **Windows Azure Active Directory**.  **Sign in and read user profile** delegated permissions should be selected.
-![Singin permission](\_img\singin-permission.png)
+![Singin permission](./_img/singin-permission.png)
 5. If your application is a single tenant application, you need to provide the tenant id in the provider settings. You can retrieve the tenant id by selecting **View endpoints** at the bottom of the screen and retrieving the id as shown below.
 
-	![View endpoints](\_img\save-tenant.png)
+	![View endpoints](./_img/save-tenant.png)
 
 1. Make a note of the **Client ID**, **Key**, and **tenant Id**. You will need this later when you configure your application.
 
@@ -59,11 +59,11 @@ For more details, on how to setup HTTPS on SonarQube, please see [Securing the S
 3. Click **Save Authentication Settings**.
 4. Sign out and go to the log in form. A new button named "**Log in with Azure AD**" allows users to sign in with their Azure AD account.
 
-	![Login with Azure AD](\_img\loginwithAD.png)
+	![Login with Azure AD](./_img/loginwithAD.png)
 
 ### General Configurations ###
 
-![AAD Final Settings](\_img\aad_final_settings.png)
+![AAD Final Settings](./_img/aad_final_settings.png)
 
 |Property|Description|Default value|
 |--------|-----------|-------------|
