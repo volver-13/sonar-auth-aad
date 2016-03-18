@@ -10,6 +10,8 @@ This plug-in enables Azure Active Directory (AAD) users to automatically be sign
 ### Enable HTTPS on SonarQube ###
 The Azure Active Directory Authentication Plug-in for SonarQube is really a OAuth 2.0 provider for SonarQube. For security reasons, HTTP is not supported. HTTPS must be used, by configuring it on the SonarQube server if this is not done already.
 
+`Server base URL` property must be set to this HTTPS URL either by setting the property from SonarQube administration page (General -> Server base URL) or through setting `sonar.core.serverBaseURL` key value in the sonar.properties file.
+
 For more details, on how to setup HTTPS on SonarQube, please see [Securing the Server behind a Proxy](http://docs.sonarqube.org/display/SONAR/Securing+the+Server+Behind+a+Proxy)
 
 
