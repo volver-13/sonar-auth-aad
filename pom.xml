@@ -11,8 +11,8 @@
     <groupId>org.almrangers.auth.aad</groupId>
     <artifactId>sonar-auth-aad-plugin</artifactId>
     <version>1.0-SNAPSHOT</version>
-    <name>Azure Active Directory Authentication for SonarQube</name>
-    <description>Azure Active Directory Authentication for SonarQube</description>
+    <name>Azure Active Directory (AAD) Authentication Plug-in for SonarQube</name>
+    <description>This plug-in enables Azure Active Directory (AAD) users to automatically be sign up (a login is created if they don’t have one already) and authenticated on a SonarQube server.</description>
     <inceptionYear>2016</inceptionYear>
 
     <packaging>sonar-plugin</packaging>
@@ -26,13 +26,11 @@
         <system>jira</system>
         <url>https://jira.sonarsource.com/projects/SQAUTHAAD</url>
     </issueManagement>
-    <licenses>
-        <license>
-            <name>GNU LGPL 3</name>
-            <url>http://www.gnu.org/licenses/lgpl.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
+     <scm>    
+    <url>https://github.com/SonarQubeCommunity/sonar-auth-aad</url>
+    <tag>HEAD</tag>
+  </scm>
+    
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
