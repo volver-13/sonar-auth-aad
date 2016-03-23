@@ -26,12 +26,12 @@
  */
 package org.almrangers.auth.aad;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
 import org.sonar.api.server.ServerSide;
-
-import java.util.Arrays;
-import java.util.List;
 
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
@@ -40,8 +40,8 @@ import static org.sonar.api.PropertyType.SINGLE_SELECT_LIST;
 
 @ServerSide
 public class AadSettings {
-    static final String CLIENT_ID = "sonar.auth.aad.clientId";
-    static final String CLIENT_SECRET = "sonar.auth.aad.clientSecret";
+  static final String CLIENT_ID = "sonar.auth.aad.clientId.secured";
+  static final String CLIENT_SECRET = "sonar.auth.aad.clientSecret.secured";
     static final String ENABLED = "sonar.auth.aad.enabled";
     static final String ALLOW_USERS_TO_SIGN_UP = "sonar.auth.aad.allowUsersToSignUp";
     static final String TENANT_ID = "sonar.auth.aad.tenantId";
