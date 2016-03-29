@@ -67,15 +67,15 @@ For more details, on how to setup HTTPS on SonarQube, please see [Securing the S
 
 ![AAD Final Settings](./_img/aad_final_settings.png)
 
-|Property|Description|Default value|
-|--------|-----------|-------------|
-|sonar.auth.aad.enabled|Enable Azure AD users to log in. Value is ignored if client ID and secret are not defined.|false|
-|sonar.auth.aad.clientId|Client ID provided by Azure AD when registering the application.|None|
-|sonar.auth.aad.clientSecret|Client password provided by Azure AD when registering the application.|None|
-|sonar.auth.aad.multiTenant|Set the value to True if users from other Azure Active Directories can consent to the application and sign in to it. |false|
-|sonar.auth.aad.tenantId|Azure Active Deirectory Tenant Id. This value is optional if sonar.auth.aad.multiTenant set to True  |None|
-|sonar.auth.aad.allowUsersToSignUp|Allow new users to authenticate. When set to 'false', only existing users will be able to authenticate to the server.|true|
-|sonar.auth.aad.loginStrategy|When the login strategy is set to '***Unique***', the user's login will be auto-generated the first time so that it is unique. When the login strategy is set to '***Same as Azure AD login***', the user's login will be the Azure AD login. This last strategy allows, when changing the authentication provider, to keep existing users if logins from a new provider are the same as Azure AD).|Unique|
+|Property Key|Property Name|Description|Default value|
+|:----------------------|:---------------------:|:--------|:--------:|
+|sonar.auth.aad.enabled|Enabled|Enable Azure AD users to log in. Value is ignored if client ID and secret are not defined.|false|
+|sonar.auth.aad.clientId.secured|Client ID|Client ID provided by Azure AD when registering the application.|None|
+|sonar.auth.aad.clientSecret.secured|Client Secret|Client password provided by Azure AD when registering the application.|None|
+|sonar.auth.aad.multiTenant|Multi-tenant Azure Application|Set the value to True if users from other Azure Active Directories can consent to the application and sign in to it. |false|
+|sonar.auth.aad.tenantId|Tenant ID|Azure Active Deirectory Tenant Id. This value is optional if sonar.auth.aad.multiTenant set to True  |None|
+|sonar.auth.aad.allowUsersToSignUp|Allow users to sign-up|Allow new users to authenticate. When set to 'false', only existing users will be able to authenticate to the server.|true|
+|sonar.auth.aad.loginStrategy|Login generation strategy|When the login strategy is set to '***Unique***', the user's login will be auto-generated the first time so that it is unique. When the login strategy is set to '***Same as Azure AD login***', the user's login will be the Azure AD login. This last strategy allows, when changing the authentication provider, to keep existing users if logins from a new provider are the same as Azure AD).|Unique|
 
 ## Additional Configurations ##
 
