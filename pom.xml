@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.almrangers.auth.aad</groupId>
     <artifactId>sonar-auth-aad-plugin</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0</version>
     <name>Azure Active Directory (AAD) Authentication Plug-in for SonarQube</name>
     <description>This plug-in enables Azure Active Directory (AAD) users to automatically be sign up (a login is created if they don’t have one already) and authenticated on a SonarQube server.</description>
     <inceptionYear>2016</inceptionYear>
@@ -13,7 +13,7 @@
         <url>https://aka.ms/vsarblog</url>
     </organization>
     <issueManagement>
-        <system>jira</system>
+        <system>GitHub Issues</system>
         <url>https://github.com/SonarQubeCommunity/sonar-auth-aad/issues</url>
     </issueManagement>
      <scm>    
