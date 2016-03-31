@@ -8,7 +8,7 @@ This plug-in enables Azure Active Directory (AAD) users to automatically be sign
 ## Prerequisites ##
 
 ### Enable HTTPS on SonarQube ###
-The Azure Active Directory Authentication Plug-in for SonarQube is really a OAuth 2.0 provider for SonarQube. For security reasons, HTTP is not supported. HTTPS must be used, by configuring it on the SonarQube server if this is not done already.
+The Azure Active Directory Authentication Plug-in for SonarQube is an OAuth 2.0 provider for SonarQube. For security reasons, HTTP is not supported. HTTPS must be used, by configuring it on the SonarQube server if this is not done already.
 
 `Server base URL` property must be set to this HTTPS URL either by setting the property from SonarQube administration page (General -> Server base URL) or through setting `sonar.core.serverBaseURL` key value in the sonar.properties file.
 
@@ -48,7 +48,7 @@ For more details, on how to setup HTTPS on SonarQube, please see [Securing the S
 
 ### Install Azure AD Authentication plug-in ###
 
-1. Downlaod and Copy **sonar-auth-aad-plugin-1.0-SNAPSHOT** to SonarQube server plugin folder under extensions folder.
+1. Download and Copy **sonar-auth-aad-plugin-1.0-SNAPSHOT** to SonarQube server plugin folder under extensions folder.
 2. **Restart** SonarQube Server
 
 ### Configure Azure AD Authentication plugin ###
@@ -72,15 +72,15 @@ For more details, on how to setup HTTPS on SonarQube, please see [Securing the S
 
 ![AAD Final Settings](./_img/aad_final_settings.png)
 
-|Property|Description|Default value|
-|--------|-----------|-------------|
-|sonar.auth.aad.enabled|Enable Azure AD users to log in. Value is ignored if client ID and secret are not defined.|false|
-|sonar.auth.aad.clientId|Client ID provided by Azure AD when registering the application.|None|
-|sonar.auth.aad.clientSecret|Client password provided by Azure AD when registering the application.|None|
-|sonar.auth.aad.multiTenant|Set the value to True if users from other Azure Active Directories can consent to the application and sign in to it. |false|
-|sonar.auth.aad.tenantId|Azure Active Deirectory Tenant Id. This value is optional if sonar.auth.aad.multiTenant set to True  |None|
-|sonar.auth.aad.allowUsersToSignUp|Allow new users to authenticate. When set to 'false', only existing users will be able to authenticate to the server.|true|
-|sonar.auth.aad.loginStrategy|When the login strategy is set to '***Unique***', the user's login will be auto-generated the first time so that it is unique. When the login strategy is set to '***Same as Azure AD login***', the user's login will be the Azure AD login. This last strategy allows, when changing the authentication provider, to keep existing users if logins from a new provider are the same as Azure AD).|Unique|
+|Property Key|Property Name|Description|Default value|
+|:----------------------|:---------------------:|:--------|:--------:|
+|sonar.auth.aad.enabled|Enabled|Enable Azure AD users to log in. Value is ignored if client ID and secret are not defined.|false|
+|sonar.auth.aad.clientId.secured|Client ID|Client ID provided by Azure AD when registering the application.|None|
+|sonar.auth.aad.clientSecret.secured|Client Secret|Client password provided by Azure AD when registering the application.|None|
+|sonar.auth.aad.multiTenant|Multi-tenant Azure Application|Set the value to True if users from other Azure Active Directories can consent to the application and sign in to it. |false|
+|sonar.auth.aad.tenantId|Tenant ID|Azure Active Directory Tenant Id. This value is optional if sonar.auth.aad.multiTenant set to True  |None|
+|sonar.auth.aad.allowUsersToSignUp|Allow users to sign-up|Allow new users to authenticate. When set to 'false', only existing users will be able to authenticate to the server.|true|
+|sonar.auth.aad.loginStrategy|Login generation strategy|When the login strategy is set to '***Unique***', the user's login will be auto-generated the first time so that it is unique. When the login strategy is set to '***Same as Azure AD login***', the user's login will be the Azure AD login. This last strategy allows, when changing the authentication provider, to keep existing users if logins from a new provider are the same as Azure AD).|Unique|
 
 ### Groups Syncronization ###
 |Property|Description|Default value|
@@ -94,5 +94,5 @@ This can be simply done by linking your email to an existing Gravitar account or
 
 1. **Managing AAD users access to SonarQube**
 To restrict access to SonarQube to a given group of AAD users, there are currently two ways to do so:
-	1. **From SonarQube Server**, set "Allow Users to SignUp" property to False in AAD settings. When set to 'false', only existing users will be able to authenticate to the server. SonarQube Administrator can add AAD users manually to the server. refer to [Authentication](http://docs.sonarqube.org/display/SONAR/Authentication)
+	1. **From SonarQube Server**, set "Allow Users to SignUp" property to False in AAD settings. When set to 'false', only existing local/AAD users will be able to authenticate to the server. SonarQube Administrator can add local users manually to the server. refer to [Authentication](http://docs.sonarqube.org/display/SONAR/Authentication)
 	2. **From Azure Active Directory Application settings**, restricting the access to the Azure application you created in "Create Active Directory application under your Azure Active Directory tenant" section. Refer to  [Managing access to apps](https://azure.microsoft.com/en-us/documentation/articles/active-directory-managing-access-to-apps)
