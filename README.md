@@ -29,8 +29,13 @@ For more details, on how to setup HTTPS on SonarQube, please see [Securing the S
 1. While you are still in the Azure portal, click the **Configure** tab of your application.
 2. In **Reply URL**, remove the existing URL. Add SonarQube Server URL and append `https://<SonarQube_ServerURL>/oauth2/callback`, example `https://localhost:9090/oauth2/callback`
 3. Under the **keys** section, create a key for your application with 1 year expiry duration.
-4. Under **Permissions to other applications** section, make sure the application has access to **Windows Azure Active Directory**.  **Sign in and read user profile** delegated permissions should be selected.
+4. Under **Permissions to other applications** section, make sure the application has access to **Windows Azure Active Directory**. **Sign in and read user profile** delegated permissions should be selected.
 ![Singin permission](./_img/singin-permission.png)
+
+1. If you enabled group syncronization, make sure the application has access to **Windows Azure Active Directory**.  **Read all groups** delegated permissions should be selected.
+
+![groups permission](./_img/groups_sync.png)
+
 5. If your application is a single tenant application, you need to provide the tenant id in the provider settings. You can retrieve the tenant id by selecting **View endpoints** at the bottom of the screen and retrieving the id as shown below.
 
 	![View endpoints](./_img/save-tenant.png)
@@ -76,6 +81,11 @@ For more details, on how to setup HTTPS on SonarQube, please see [Securing the S
 |sonar.auth.aad.tenantId|Azure Active Deirectory Tenant Id. This value is optional if sonar.auth.aad.multiTenant set to True  |None|
 |sonar.auth.aad.allowUsersToSignUp|Allow new users to authenticate. When set to 'false', only existing users will be able to authenticate to the server.|true|
 |sonar.auth.aad.loginStrategy|When the login strategy is set to '***Unique***', the user's login will be auto-generated the first time so that it is unique. When the login strategy is set to '***Same as Azure AD login***', the user's login will be the Azure AD login. This last strategy allows, when changing the authentication provider, to keep existing users if logins from a new provider are the same as Azure AD).|Unique|
+
+### Groups Syncronization ###
+|Property|Description|Default value|
+|--------|-----------|-------------|
+|sonar.auth.aad.enableGroupsSync|Enable Azure AD users to log in. Value is ignored if client ID and secret are not defined.|false|
 
 ## Additional Configurations ##
 
