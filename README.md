@@ -83,9 +83,11 @@ For more details, on how to setup HTTPS on SonarQube, please see [Securing the S
 |sonar.auth.aad.loginStrategy|Login generation strategy|When the login strategy is set to '***Unique***', the user's login will be auto-generated the first time so that it is unique. When the login strategy is set to '***Same as Azure AD login***', the user's login will be the Azure AD login. This last strategy allows, when changing the authentication provider, to keep existing users if logins from a new provider are the same as Azure AD).|Unique|
 
 ### Groups Syncronization ###
-|Property|Description|Default value|
+![Groups sync Settings](./_img/groups_sync_settings.png)
+
+|Property Key|Property Name|Description|Default value|
 |--------|-----------|-------------|
-|sonar.auth.aad.enableGroupsSync|Enable Azure AD users to log in. Value is ignored if client ID and secret are not defined.|false|
+|sonar.auth.aad.enableGroupsSync|Enable Groups Synchronization|Enable groups syncronization from Azure AD to SonarQube.|false|
 
 ## Additional Configurations ##
 
