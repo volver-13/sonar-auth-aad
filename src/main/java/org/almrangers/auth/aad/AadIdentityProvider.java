@@ -69,7 +69,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
     @Override
     public Display getDisplay() {
         return Display.builder()
-                .setIconPath("/static/authaad/Windows_logo.png")
+                .setIconPath("/static/authaad/azure.svg")
                 .setBackgroundColor("#336699")
                 .build();
     }
