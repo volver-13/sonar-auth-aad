@@ -156,16 +156,12 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
     {
         Set<String> userGroups = new HashSet<>();
         try {
-            LOGGER.info("getUserGroupsMembership");
             URL url = new URL(String.format(GROUPS_REQUEST_FORMAT, settings.tenantId(), userId));
             HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            // Specify values for the following required parameters
             connection.setRequestProperty("api-version", "1.6");
-            LOGGER.info("Authorization code: " + accessToken);
             connection.setRequestProperty("Authorization", accessToken);
             connection.setRequestProperty("Accept", "application/json;odata=minimalmetadata");
             String goodRespStr = HttpClientHelper.getResponseStringFromConn(connection, true);
-
             int responseCode = connection.getResponseCode();
             JSONObject response = HttpClientHelper.processGoodRespStr(responseCode, goodRespStr);
             JSONArray groups;
