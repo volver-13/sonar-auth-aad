@@ -26,12 +26,12 @@
  */
 package org.almrangers.auth.aad;
 
-import java.util.Arrays;
-import java.util.List;
-
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
 import org.sonar.api.server.ServerSide;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
@@ -45,6 +45,7 @@ public class AadSettings {
     static final String ENABLED = "sonar.auth.aad.enabled";
     static final String ALLOW_USERS_TO_SIGN_UP = "sonar.auth.aad.allowUsersToSignUp";
     static final String TENANT_ID = "sonar.auth.aad.tenantId";
+    static final String ENABLE_GROUPS_SYNC = "sonar.auth.aad.enableGroupsSync";
     static final String LOGIN_STRATEGY = "sonar.auth.aad.loginStrategy";
     static final String LOGIN_STRATEGY_UNIQUE = "Unique";
     static final String LOGIN_STRATEGY_PROVIDER_ID = "Same as Azure AD login";
@@ -53,13 +54,17 @@ public class AadSettings {
 
     static final String CATEGORY = "Azure Active Directory";
     static final String SUBCATEGORY = "Authentication";
+    static final String GROUPSYNCSUBCATEGORY = "Groups Syncronization";
 
     static final String ROOT_URL = "https://login.microsoftonline.com";
     static final String AUTHORIZATION_URL = "oauth2/authorize";
     static final String AUTHORITY_URL = "oauth2/token";
     static final String COMMON_URL = "common";
     static final String SECURE_RESOURCE_URL = "https://graph.windows.net";
+    //static final String SECURE_RESOURCE_URL = "http://contoso/sonarqubeaad";
+
     static final String AUTH_REQUEST_FORMAT = "%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s";
+    static final String GROUPS_REQUEST_FORMAT ="https://graph.windows.net/%s/users/%s/memberOf?api-version=1.6";
 
     private final Settings settings;
 
@@ -128,6 +133,16 @@ public class AadSettings {
                         .defaultValue(LOGIN_STRATEGY_DEFAULT_VALUE)
                         .options(LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID)
                         .index(7)
+                        .build(),
+                PropertyDefinition.builder(ENABLE_GROUPS_SYNC)
+                        .name("Enable Groups Synchronization")
+                        .description(format("Enable groups syncronization from Azure Ad to SonarQube",
+                                LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID))
+                        .category(CATEGORY)
+                        .subCategory(GROUPSYNCSUBCATEGORY)
+                        .type(BOOLEAN)
+                        .defaultValue(valueOf(false))
+                        .index(8)
                         .build()
 
         );
@@ -139,6 +154,10 @@ public class AadSettings {
 
     public boolean allowUsersToSignUp() {
         return settings.getBoolean(ALLOW_USERS_TO_SIGN_UP);
+    }
+
+    public boolean enableGroupSync() {
+        return settings.getBoolean(ENABLE_GROUPS_SYNC);
     }
     public boolean multiTenant() {
         return settings.getBoolean(MULTI_TENANT);

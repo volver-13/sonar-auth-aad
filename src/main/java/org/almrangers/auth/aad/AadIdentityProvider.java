@@ -32,19 +32,25 @@ import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import com.microsoft.aad.adal4j.ClientCredential;
 import com.microsoft.aad.adal4j.UserInfo;
-
-import java.net.URI;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import javax.servlet.http.HttpServletRequest;
-
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.sonar.api.server.ServerSide;
 import org.sonar.api.server.authentication.Display;
 import org.sonar.api.server.authentication.OAuth2IdentityProvider;
+import org.sonar.api.server.authentication.UnauthorizedException;
 import org.sonar.api.server.authentication.UserIdentity;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
+
+import javax.servlet.http.HttpServletRequest;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static java.lang.String.format;
 import static org.almrangers.auth.aad.AadSettings.*;
@@ -103,7 +109,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
         AuthenticationContext authContext;
         AuthenticationResult result;
         ExecutorService service = null;
-
+        Set<String> userGroups;
         try {
             service = Executors.newFixedThreadPool(1);
             authContext = new AuthenticationContext(settings.authorityUrl(), false, service);
@@ -114,26 +120,27 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
             result = future.get();
 
             UserInfo aadUser = result.getUserInfo();
-            UserIdentity userIdentity = UserIdentity.builder()
+            UserIdentity.Builder userIdentityBuilder = UserIdentity.builder()
                     .setProviderLogin(getName())
                     .setLogin(getLogin(aadUser))
                     .setName(aadUser.getGivenName() + " " + aadUser.getFamilyName())
-                    .setEmail(aadUser.getDisplayableId())
-                    .build();
-            context.authenticate(userIdentity);
+                    .setEmail(aadUser.getDisplayableId());
+            if(settings.enableGroupSync()) {
+                userGroups = getUserGroupsMembership(result.getAccessToken(),result.getUserInfo().getUniqueId());
+                if(userGroups!=null)
+                    userIdentityBuilder.setGroups(userGroups);
+            }
+            context.authenticate(userIdentityBuilder.build());
             context.redirectToRequestedPage();
         } catch (Exception e) {
             LOGGER.error("Exception:" + e.toString());
+        }
+        finally {
             if (service != null) {
                 service.shutdown();
             }
-            //ugly but required to force redirection to unauthorized page
-            //ToDO: use the supported API once available ... check SONAR-7444 [https://jira.sonarsource.com/browse/SONAR-7444]
-            throw new IllegalStateException(format("Fail to authenticate the user:%s", e.toString()));
-
         }
     }
-
     private String getLogin(UserInfo aadUser) {
         String loginStrategy = settings.loginStrategy();
         if (LOGIN_STRATEGY_UNIQUE.equals(loginStrategy)) {
@@ -141,8 +148,40 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
         } else if (LOGIN_STRATEGY_PROVIDER_ID.equals(loginStrategy)) {
             return aadUser.getDisplayableId();
         } else {
-            throw new IllegalStateException(format("Login strategy not found : %s", loginStrategy));
+            throw new UnauthorizedException(format("Login strategy not found : %s", loginStrategy));
         }
+    }
+
+    private Set<String> getUserGroupsMembership(String accessToken,String userId)
+    {
+        Set<String> userGroups = new HashSet<>();
+        try {
+            LOGGER.info("getUserGroupsMembership");
+            URL url = new URL(String.format(GROUPS_REQUEST_FORMAT, settings.tenantId(), userId));
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            // Specify values for the following required parameters
+            connection.setRequestProperty("api-version", "1.6");
+            LOGGER.info("Authorization code: " + accessToken);
+            connection.setRequestProperty("Authorization", accessToken);
+            connection.setRequestProperty("Accept", "application/json;odata=minimalmetadata");
+            String goodRespStr = HttpClientHelper.getResponseStringFromConn(connection, true);
+
+            int responseCode = connection.getResponseCode();
+            JSONObject response = HttpClientHelper.processGoodRespStr(responseCode, goodRespStr);
+            JSONArray groups;
+            groups = JSONHelper.fetchDirectoryObjectJSONArray(response);
+            AadGroup group;
+            for (int i = 0; i < groups.length(); i++) {
+                JSONObject thisUserJSONObject = groups.optJSONObject(i);
+                group = new AadGroup();
+                JSONHelper.convertJSONObjectToDirectoryObject(thisUserJSONObject, group);
+                userGroups.add(group.getDisplayName());
+            }
+        }
+        catch (Exception e) {
+            LOGGER.error(e.toString());
+        }
+        return userGroups;
     }
 
     private String generateUniqueLogin(UserInfo aadUser) {
