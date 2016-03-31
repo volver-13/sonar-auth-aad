@@ -19,17 +19,17 @@
  ******************************************************************************/
 package org.almrangers.auth.aad;
 
+import java.lang.reflect.Field;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import javax.servlet.http.HttpServletRequest;
+
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import javax.servlet.http.HttpServletRequest;
-import java.lang.reflect.Field;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
 /**
  * Created by hkamel on 3/27/2016.
  */

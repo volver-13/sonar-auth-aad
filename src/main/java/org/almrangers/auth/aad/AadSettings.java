@@ -26,12 +26,12 @@
  */
 package org.almrangers.auth.aad;
 
+import java.util.Arrays;
+import java.util.List;
+
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
 import org.sonar.api.server.ServerSide;
-
-import java.util.Arrays;
-import java.util.List;
 
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
@@ -61,7 +61,6 @@ public class AadSettings {
     static final String AUTHORITY_URL = "oauth2/token";
     static final String COMMON_URL = "common";
     static final String SECURE_RESOURCE_URL = "https://graph.windows.net";
-    //static final String SECURE_RESOURCE_URL = "http://contoso/sonarqubeaad";
 
     static final String AUTH_REQUEST_FORMAT = "%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s";
     static final String GROUPS_REQUEST_FORMAT ="https://graph.windows.net/%s/users/%s/memberOf?api-version=1.6";

@@ -20,15 +20,12 @@
 
 package org.almrangers.auth.aad;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.*;
 import java.net.HttpURLConnection;
 
-/**
- * Created by hkamel on 3/27/2016.
- */
+import org.json.JSONException;
+import org.json.JSONObject;
+
 public class HttpClientHelper {
 
     public HttpClientHelper() {
@@ -37,7 +34,7 @@ public class HttpClientHelper {
 
     public static String getResponseStringFromConn(HttpURLConnection conn, boolean isSuccess) throws IOException {
 
-        BufferedReader reader = null;
+    BufferedReader reader;
         if (isSuccess) {
             reader = new BufferedReader(new InputStreamReader(conn.getInputStream()));
         } else {
