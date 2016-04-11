@@ -34,13 +34,13 @@ import org.sonar.api.SonarPlugin;
 
 public class AuthAadPlugin extends SonarPlugin {
 
-    @Override
-    public List getExtensions() {
-        List extensions = new ArrayList();
-        extensions.add(AadIdentityProvider.class);
-        extensions.add(AadSettings.class);
-        extensions.addAll(AadSettings.definitions());
-        return extensions;
-    }
+  @Override
+  public List getExtensions() {
+    List extensions = new ArrayList();
+    extensions.add(AadIdentityProvider.class);
+    extensions.add(AadSettings.class);
+    extensions.addAll(AadSettings.definitions());
+    return extensions;
+  }
 
 }
