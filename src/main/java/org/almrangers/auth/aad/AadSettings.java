@@ -136,7 +136,7 @@ public class AadSettings {
       PropertyDefinition.builder(ENABLE_GROUPS_SYNC)
         .name("Enable Groups Synchronization")
         .description(format(
-          "Enable groups syncronization from Azure AD to SonarQube, For each Azure AD group user belongs to, the user will be associated to a group with the same name(if it exists) in SonarQube.",
+          "Enable groups synchronization from Azure AD to SonarQube, For each Azure AD group user belongs to, the user will be associated to a group with the same name(if it exists) in SonarQube.",
           LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID))
         .category(CATEGORY)
         .subCategory(GROUPSYNCSUBCATEGORY)
