@@ -27,7 +27,6 @@
 
 package org.almrangers.auth.aad;
 
-
 import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import com.microsoft.aad.adal4j.ClientCredential;
@@ -58,131 +57,129 @@ import static org.almrangers.auth.aad.AadSettings.*;
 
 @ServerSide
 public class AadIdentityProvider implements OAuth2IdentityProvider {
-    private static final Logger LOGGER = Loggers.get(AadIdentityProvider.class);
+  public static final String KEY = "aad";
+  public static final String NAME = "Azure AD";
+  private static final Logger LOGGER = Loggers.get(AadIdentityProvider.class);
+  private final AadSettings settings;
 
-    private final AadSettings settings;
+  public AadIdentityProvider(AadSettings settings) {
+    this.settings = settings;
+  }
 
-    public AadIdentityProvider(AadSettings settings) {
-        this.settings = settings;
+  @Override
+  public Display getDisplay() {
+    return Display.builder()
+      .setIconPath("/static/authaad/azure.svg")
+      .setBackgroundColor("#336699")
+      .build();
+  }
+
+  @Override
+  public String getKey() {
+    return KEY;
+  }
+
+  @Override
+  public String getName() {
+    return NAME;
+  }
+
+  @Override
+  public boolean isEnabled() {
+    return settings.isEnabled();
+  }
+
+  @Override
+  public boolean allowsUsersToSignUp() {
+    return settings.allowUsersToSignUp();
+  }
+
+  @Override
+  public void init(InitContext context) {
+    String state = context.generateCsrfState();
+    String authUrl = String.format(AUTH_REQUEST_FORMAT, settings.authorizationUrl(), settings.clientId(), context.getCallbackUrl(), state);
+    context.redirectTo(authUrl);
+  }
+
+  @Override
+  public void callback(CallbackContext context) {
+    context.verifyCsrfState();
+    HttpServletRequest request = context.getRequest();
+    String oAuthVerifier = request.getParameter("code");
+    AuthenticationContext authContext;
+    AuthenticationResult result;
+    ExecutorService service = null;
+    Set<String> userGroups;
+    try {
+      service = Executors.newFixedThreadPool(1);
+      authContext = new AuthenticationContext(settings.authorityUrl(), false, service);
+      URI url = new URI(context.getCallbackUrl());
+      ClientCredential clientCredt = new ClientCredential(settings.clientId(), settings.clientSecret());
+      Future<AuthenticationResult> future = authContext.acquireTokenByAuthorizationCode(
+        oAuthVerifier, url, clientCredt, SECURE_RESOURCE_URL, null);
+      result = future.get();
+
+      UserInfo aadUser = result.getUserInfo();
+      UserIdentity.Builder userIdentityBuilder = UserIdentity.builder()
+        .setProviderLogin(getName())
+        .setLogin(getLogin(aadUser))
+        .setName(aadUser.getGivenName() + " " + aadUser.getFamilyName())
+        .setEmail(aadUser.getDisplayableId());
+      if (settings.enableGroupSync()) {
+        userGroups = getUserGroupsMembership(result.getAccessToken(), result.getUserInfo().getUniqueId());
+        if (userGroups != null)
+          userIdentityBuilder.setGroups(userGroups);
+      }
+      context.authenticate(userIdentityBuilder.build());
+      context.redirectToRequestedPage();
+    } catch (Exception e) {
+      LOGGER.error("Exception:" + e.toString());
+    } finally {
+      if (service != null) {
+        service.shutdown();
+      }
     }
+  }
 
-
-    @Override
-    public Display getDisplay() {
-        return Display.builder()
-                .setIconPath("/static/authaad/azure.svg")
-                .setBackgroundColor("#336699")
-                .build();
+  private String getLogin(UserInfo aadUser) {
+    String loginStrategy = settings.loginStrategy();
+    if (LOGIN_STRATEGY_UNIQUE.equals(loginStrategy)) {
+      return generateUniqueLogin(aadUser);
+    } else if (LOGIN_STRATEGY_PROVIDER_ID.equals(loginStrategy)) {
+      return aadUser.getDisplayableId();
+    } else {
+      throw new UnauthorizedException(format("Login strategy not found : %s", loginStrategy));
     }
+  }
 
-    @Override
-    public String getKey() {
-        return "aad";
+  private Set<String> getUserGroupsMembership(String accessToken, String userId) {
+    Set<String> userGroups = new HashSet<>();
+    try {
+      URL url = new URL(String.format(GROUPS_REQUEST_FORMAT, settings.tenantId(), userId));
+      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+      connection.setRequestProperty("api-version", "1.6");
+      connection.setRequestProperty("Authorization", accessToken);
+      connection.setRequestProperty("Accept", "application/json;odata=minimalmetadata");
+      String goodRespStr = HttpClientHelper.getResponseStringFromConn(connection, true);
+      int responseCode = connection.getResponseCode();
+      JSONObject response = HttpClientHelper.processGoodRespStr(responseCode, goodRespStr);
+      JSONArray groups;
+      groups = JSONHelper.fetchDirectoryObjectJSONArray(response);
+      AadGroup group;
+      for (int i = 0; i < groups.length(); i++) {
+        JSONObject thisUserJSONObject = groups.optJSONObject(i);
+        group = new AadGroup();
+        JSONHelper.convertJSONObjectToDirectoryObject(thisUserJSONObject, group);
+        userGroups.add(group.getDisplayName());
+      }
+    } catch (Exception e) {
+      LOGGER.error(e.toString());
     }
+    return userGroups;
+  }
 
-    @Override
-    public String getName() {
-        return "Azure AD";
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return settings.isEnabled();
-    }
-
-    @Override
-    public boolean allowsUsersToSignUp() {
-        return settings.allowUsersToSignUp();
-    }
-
-    @Override
-    public void init(InitContext context) {
-        String state = context.generateCsrfState();
-        String authUrl = String.format(AUTH_REQUEST_FORMAT,settings.authorizationUrl(),settings.clientId(),context.getCallbackUrl(),state);
-        context.redirectTo(authUrl);
-    }
-
-    @Override
-    public void callback(CallbackContext context) {
-        context.verifyCsrfState();
-        HttpServletRequest request = context.getRequest();
-        String oAuthVerifier = request.getParameter("code");
-        AuthenticationContext authContext;
-        AuthenticationResult result;
-        ExecutorService service = null;
-        Set<String> userGroups;
-        try {
-            service = Executors.newFixedThreadPool(1);
-            authContext = new AuthenticationContext(settings.authorityUrl(), false, service);
-            URI url = new URI(context.getCallbackUrl());
-            ClientCredential clientCredt = new ClientCredential(settings.clientId(), settings.clientSecret());
-            Future<AuthenticationResult> future = authContext.acquireTokenByAuthorizationCode(
-                    oAuthVerifier, url, clientCredt, SECURE_RESOURCE_URL, null);
-            result = future.get();
-
-            UserInfo aadUser = result.getUserInfo();
-            UserIdentity.Builder userIdentityBuilder = UserIdentity.builder()
-                    .setProviderLogin(getName())
-                    .setLogin(getLogin(aadUser))
-                    .setName(aadUser.getGivenName() + " " + aadUser.getFamilyName())
-                    .setEmail(aadUser.getDisplayableId());
-            if(settings.enableGroupSync()) {
-                userGroups = getUserGroupsMembership(result.getAccessToken(),result.getUserInfo().getUniqueId());
-                if(userGroups!=null)
-                    userIdentityBuilder.setGroups(userGroups);
-            }
-            context.authenticate(userIdentityBuilder.build());
-            context.redirectToRequestedPage();
-        } catch (Exception e) {
-            LOGGER.error("Exception:" + e.toString());
-        }
-        finally {
-            if (service != null) {
-                service.shutdown();
-            }
-        }
-    }
-    private String getLogin(UserInfo aadUser) {
-        String loginStrategy = settings.loginStrategy();
-        if (LOGIN_STRATEGY_UNIQUE.equals(loginStrategy)) {
-            return generateUniqueLogin(aadUser);
-        } else if (LOGIN_STRATEGY_PROVIDER_ID.equals(loginStrategy)) {
-            return aadUser.getDisplayableId();
-        } else {
-            throw new UnauthorizedException(format("Login strategy not found : %s", loginStrategy));
-        }
-    }
-
-    private Set<String> getUserGroupsMembership(String accessToken,String userId)
-    {
-        Set<String> userGroups = new HashSet<>();
-        try {
-            URL url = new URL(String.format(GROUPS_REQUEST_FORMAT, settings.tenantId(), userId));
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty("api-version", "1.6");
-            connection.setRequestProperty("Authorization", accessToken);
-            connection.setRequestProperty("Accept", "application/json;odata=minimalmetadata");
-            String goodRespStr = HttpClientHelper.getResponseStringFromConn(connection, true);
-            int responseCode = connection.getResponseCode();
-            JSONObject response = HttpClientHelper.processGoodRespStr(responseCode, goodRespStr);
-            JSONArray groups;
-            groups = JSONHelper.fetchDirectoryObjectJSONArray(response);
-            AadGroup group;
-            for (int i = 0; i < groups.length(); i++) {
-                JSONObject thisUserJSONObject = groups.optJSONObject(i);
-                group = new AadGroup();
-                JSONHelper.convertJSONObjectToDirectoryObject(thisUserJSONObject, group);
-                userGroups.add(group.getDisplayName());
-            }
-        }
-        catch (Exception e) {
-            LOGGER.error(e.toString());
-        }
-        return userGroups;
-    }
-
-    private String generateUniqueLogin(UserInfo aadUser) {
-        return String.format("%s@%s",aadUser.getDisplayableId(),getKey());
-    }
+  private String generateUniqueLogin(UserInfo aadUser) {
+    return String.format("%s@%s", aadUser.getDisplayableId(), getKey());
+  }
 
 }

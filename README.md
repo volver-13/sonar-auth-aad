@@ -87,7 +87,7 @@ For more details, on how to setup HTTPS on SonarQube, please see [Securing the S
 
 |Property Key|Property Name|Description|Default value|
 |:----------------------|:---------------------:|:--------|:--------:|
-|sonar.auth.aad.enableGroupsSync|Enable Groups Synchronization|Enable groups syncronization from Azure AD to SonarQube.|false|
+|sonar.auth.aad.enableGroupsSync|Enable Groups Synchronization|Enable groups syncronization from Azure AD to SonarQube, For each Azure AD group user belongs to, the user will be associated to a group with the same name(if it exists) in SonarQube.|false|
 
 ## Additional Configurations ##
 

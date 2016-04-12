@@ -42,154 +42,156 @@ import static org.sonar.api.PropertyType.SINGLE_SELECT_LIST;
 public class AadSettings {
   static final String CLIENT_ID = "sonar.auth.aad.clientId.secured";
   static final String CLIENT_SECRET = "sonar.auth.aad.clientSecret.secured";
-    static final String ENABLED = "sonar.auth.aad.enabled";
-    static final String ALLOW_USERS_TO_SIGN_UP = "sonar.auth.aad.allowUsersToSignUp";
-    static final String TENANT_ID = "sonar.auth.aad.tenantId";
-    static final String ENABLE_GROUPS_SYNC = "sonar.auth.aad.enableGroupsSync";
-    static final String LOGIN_STRATEGY = "sonar.auth.aad.loginStrategy";
-    static final String LOGIN_STRATEGY_UNIQUE = "Unique";
-    static final String LOGIN_STRATEGY_PROVIDER_ID = "Same as Azure AD login";
-    static final String LOGIN_STRATEGY_DEFAULT_VALUE = LOGIN_STRATEGY_UNIQUE;
-    static final String MULTI_TENANT = "sonar.auth.aad.multiTenant";
+  static final String ENABLED = "sonar.auth.aad.enabled";
+  static final String ALLOW_USERS_TO_SIGN_UP = "sonar.auth.aad.allowUsersToSignUp";
+  static final String TENANT_ID = "sonar.auth.aad.tenantId";
+  static final String ENABLE_GROUPS_SYNC = "sonar.auth.aad.enableGroupsSync";
+  static final String LOGIN_STRATEGY = "sonar.auth.aad.loginStrategy";
+  static final String LOGIN_STRATEGY_UNIQUE = "Unique";
+  static final String LOGIN_STRATEGY_PROVIDER_ID = "Same as Azure AD login";
+  static final String LOGIN_STRATEGY_DEFAULT_VALUE = LOGIN_STRATEGY_UNIQUE;
+  static final String MULTI_TENANT = "sonar.auth.aad.multiTenant";
 
-    static final String CATEGORY = "Azure Active Directory";
-    static final String SUBCATEGORY = "Authentication";
-    static final String GROUPSYNCSUBCATEGORY = "Groups Syncronization";
+  static final String CATEGORY = "Azure Active Directory";
+  static final String SUBCATEGORY = "Authentication";
+  static final String GROUPSYNCSUBCATEGORY = "Groups Syncronization";
 
-    static final String ROOT_URL = "https://login.microsoftonline.com";
-    static final String AUTHORIZATION_URL = "oauth2/authorize";
-    static final String AUTHORITY_URL = "oauth2/token";
-    static final String COMMON_URL = "common";
-    static final String SECURE_RESOURCE_URL = "https://graph.windows.net";
+  static final String ROOT_URL = "https://login.microsoftonline.com";
+  static final String AUTHORIZATION_URL = "oauth2/authorize";
+  static final String AUTHORITY_URL = "oauth2/token";
+  static final String COMMON_URL = "common";
+  static final String SECURE_RESOURCE_URL = "https://graph.windows.net";
 
-    static final String AUTH_REQUEST_FORMAT = "%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s";
-    static final String GROUPS_REQUEST_FORMAT ="https://graph.windows.net/%s/users/%s/memberOf?api-version=1.6";
+  static final String AUTH_REQUEST_FORMAT = "%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s";
+  static final String GROUPS_REQUEST_FORMAT = "https://graph.windows.net/%s/users/%s/memberOf?api-version=1.6";
 
-    private final Settings settings;
+  private final Settings settings;
 
-    public AadSettings(Settings settings) {
-        this.settings = settings;
-    }
+  public AadSettings(Settings settings) {
+    this.settings = settings;
+  }
 
-    public static List<PropertyDefinition> definitions() {
-        return Arrays.asList(
-                PropertyDefinition.builder(ENABLED)
-                        .name("Enabled")
-                        .description("Enable Azure AD users to login. Value is ignored if client ID and secret are not defined.")
-                        .category(CATEGORY)
-                        .subCategory(SUBCATEGORY)
-                        .type(BOOLEAN)
-                        .defaultValue(valueOf(false))
-                        .index(1)
-                        .build(),
-                PropertyDefinition.builder(CLIENT_ID)
-                        .name("Client ID")
-                        .description("Client ID provided by Azure AD when registering the application.")
-                        .category(CATEGORY)
-                        .subCategory(SUBCATEGORY)
-                        .index(2)
-                        .build(),
-                PropertyDefinition.builder(CLIENT_SECRET)
-                        .name("Client Secret")
-                        .description("Client key provided by Azure AD when registering the application.")
-                        .category(CATEGORY)
-                        .subCategory(SUBCATEGORY)
-                        .index(3)
-                        .build(),
-                PropertyDefinition.builder(MULTI_TENANT)
-                        .name("Multi-tenant Azure Application")
-                        .description("multi-tenant application")
-                        .category(CATEGORY)
-                        .subCategory(SUBCATEGORY)
-                        .type(BOOLEAN)
-                        .defaultValue(valueOf(false))
-                        .index(4)
-                        .build(),
-                PropertyDefinition.builder(TENANT_ID)
-                        .name("Tenant ID")
-                        .description("Azure AD Tenant ID.")
-                        .category(CATEGORY)
-                        .subCategory(SUBCATEGORY)
-                        .index(5)
-                        .build(),
-                PropertyDefinition.builder(ALLOW_USERS_TO_SIGN_UP)
-                        .name("Allow users to sign-up")
-                        .description("Allow new users to authenticate. When set to 'false', only existing users will be able to authenticate to the server.")
-                        .category(CATEGORY)
-                        .subCategory(SUBCATEGORY)
-                        .type(BOOLEAN)
-                        .defaultValue(valueOf(true))
-                        .index(6)
-                        .build(),
-                PropertyDefinition.builder(LOGIN_STRATEGY)
-                        .name("Login generation strategy")
-                        .description(format("When the login strategy is set to '%s', the user's login will be auto-generated the first time so that it is unique. " +
-                                        "When the login strategy is set to '%s', the user's login will be the Azure AD login.",
-                                LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID))
-                        .category(CATEGORY)
-                        .subCategory(SUBCATEGORY)
-                        .type(SINGLE_SELECT_LIST)
-                        .defaultValue(LOGIN_STRATEGY_DEFAULT_VALUE)
-                        .options(LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID)
-                        .index(7)
-                        .build(),
-                PropertyDefinition.builder(ENABLE_GROUPS_SYNC)
-                        .name("Enable Groups Synchronization")
-                        .description(format("Enable groups syncronization from Azure Ad to SonarQube",
-                                LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID))
-                        .category(CATEGORY)
-                        .subCategory(GROUPSYNCSUBCATEGORY)
-                        .type(BOOLEAN)
-                        .defaultValue(valueOf(false))
-                        .index(8)
-                        .build()
+  public static List<PropertyDefinition> definitions() {
+    return Arrays.asList(
+      PropertyDefinition.builder(ENABLED)
+        .name("Enabled")
+        .description("Enable Azure AD users to login. Value is ignored if client ID and secret are not defined.")
+        .category(CATEGORY)
+        .subCategory(SUBCATEGORY)
+        .type(BOOLEAN)
+        .defaultValue(valueOf(false))
+        .index(1)
+        .build(),
+      PropertyDefinition.builder(CLIENT_ID)
+        .name("Client ID")
+        .description("Client ID provided by Azure AD when registering the application.")
+        .category(CATEGORY)
+        .subCategory(SUBCATEGORY)
+        .index(2)
+        .build(),
+      PropertyDefinition.builder(CLIENT_SECRET)
+        .name("Client Secret")
+        .description("Client key provided by Azure AD when registering the application.")
+        .category(CATEGORY)
+        .subCategory(SUBCATEGORY)
+        .index(3)
+        .build(),
+      PropertyDefinition.builder(MULTI_TENANT)
+        .name("Multi-tenant Azure Application")
+        .description("multi-tenant application")
+        .category(CATEGORY)
+        .subCategory(SUBCATEGORY)
+        .type(BOOLEAN)
+        .defaultValue(valueOf(false))
+        .index(4)
+        .build(),
+      PropertyDefinition.builder(TENANT_ID)
+        .name("Tenant ID")
+        .description("Azure AD Tenant ID.")
+        .category(CATEGORY)
+        .subCategory(SUBCATEGORY)
+        .index(5)
+        .build(),
+      PropertyDefinition.builder(ALLOW_USERS_TO_SIGN_UP)
+        .name("Allow users to sign-up")
+        .description("Allow new users to authenticate. When set to 'false', only existing users will be able to authenticate to the server.")
+        .category(CATEGORY)
+        .subCategory(SUBCATEGORY)
+        .type(BOOLEAN)
+        .defaultValue(valueOf(true))
+        .index(6)
+        .build(),
+      PropertyDefinition.builder(LOGIN_STRATEGY)
+        .name("Login generation strategy")
+        .description(format("When the login strategy is set to '%s', the user's login will be auto-generated the first time so that it is unique. " +
+          "When the login strategy is set to '%s', the user's login will be the Azure AD login.",
+          LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID))
+        .category(CATEGORY)
+        .subCategory(SUBCATEGORY)
+        .type(SINGLE_SELECT_LIST)
+        .defaultValue(LOGIN_STRATEGY_DEFAULT_VALUE)
+        .options(LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID)
+        .index(7)
+        .build(),
+      PropertyDefinition.builder(ENABLE_GROUPS_SYNC)
+        .name("Enable Groups Synchronization")
+        .description(format(
+          "Enable groups synchronization from Azure AD to SonarQube, For each Azure AD group user belongs to, the user will be associated to a group with the same name(if it exists) in SonarQube.",
+          LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID))
+        .category(CATEGORY)
+        .subCategory(GROUPSYNCSUBCATEGORY)
+        .type(BOOLEAN)
+        .defaultValue(valueOf(false))
+        .index(8)
+        .build()
 
-        );
-    }
+    );
+  }
 
-    public String clientId() {
-        return settings.getString(CLIENT_ID);
-    }
+  public String clientId() {
+    return settings.getString(CLIENT_ID);
+  }
 
-    public boolean allowUsersToSignUp() {
-        return settings.getBoolean(ALLOW_USERS_TO_SIGN_UP);
-    }
+  public boolean allowUsersToSignUp() {
+    return settings.getBoolean(ALLOW_USERS_TO_SIGN_UP);
+  }
 
-    public boolean enableGroupSync() {
-        return settings.getBoolean(ENABLE_GROUPS_SYNC);
-    }
-    public boolean multiTenant() {
-        return settings.getBoolean(MULTI_TENANT);
-    }
+  public boolean enableGroupSync() {
+    return settings.getBoolean(ENABLE_GROUPS_SYNC);
+  }
 
-    public String tenantId() {
-        return settings.getString(TENANT_ID);
-    }
+  public boolean multiTenant() {
+    return settings.getBoolean(MULTI_TENANT);
+  }
 
-    public String clientSecret() {
-        return settings.getString(CLIENT_SECRET);
-    }
+  public String tenantId() {
+    return settings.getString(TENANT_ID);
+  }
 
-    public boolean isEnabled() {
-        return settings.getBoolean(ENABLED) && clientId() != null && clientSecret() != null && loginStrategy() != null;
-    }
+  public String clientSecret() {
+    return settings.getString(CLIENT_SECRET);
+  }
 
-    private String getEndpoint() {
-        if(multiTenant())
-            return COMMON_URL;
-        else
-            return tenantId();
-    }
+  public boolean isEnabled() {
+    return settings.getBoolean(ENABLED) && clientId() != null && clientSecret() != null && loginStrategy() != null;
+  }
 
-    public String authorizationUrl() {
-        return String.format("%s/%s/%s", ROOT_URL, getEndpoint(), AUTHORIZATION_URL);
-    }
+  private String getEndpoint() {
+    if (multiTenant())
+      return COMMON_URL;
+    else
+      return tenantId();
+  }
 
-    public String authorityUrl() {
-            return String.format("%s/%s/%s", ROOT_URL, getEndpoint(), AUTHORITY_URL);
-    }
+  public String authorizationUrl() {
+    return String.format("%s/%s/%s", ROOT_URL, getEndpoint(), AUTHORIZATION_URL);
+  }
 
-    public String loginStrategy() {
-        return settings.getString(LOGIN_STRATEGY);
-    }
+  public String authorityUrl() {
+    return String.format("%s/%s/%s", ROOT_URL, getEndpoint(), AUTHORITY_URL);
+  }
+
+  public String loginStrategy() {
+    return settings.getString(LOGIN_STRATEGY);
+  }
 }
