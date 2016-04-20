@@ -26,6 +26,19 @@ public class AadSettingsTest {
     }
 
     @Test
+    public void return_authorization_url_for_single_tenant_azure_app() {
+        settings.setProperty("sonar.auth.aad.multiTenant", "false");
+        settings.setProperty("sonar.auth.aad.tenantId", "tenantId");
+        assertThat(underTest.authorizationUrl()).isEqualTo("https://login.microsoftonline.com/tenantId/oauth2/authorize");
+    }
+
+    @Test
+    public void return_authorization_url_for_multi_tenant_azure_app() {
+        settings.setProperty("sonar.auth.aad.multiTenant", "true");
+        assertThat(underTest.authorizationUrl()).isEqualTo("https://login.microsoftonline.com/common/oauth2/authorize");
+    }
+
+    @Test
     public void is_enabled_always_return_false_when_client_id_is_null() {
         settings.setProperty("sonar.auth.aad.enabled", true);
         settings.setProperty("sonar.auth.aad.clientId.secured", (String) null);
@@ -61,6 +74,7 @@ public class AadSettingsTest {
         settings.setProperty("sonar.auth.aad.clientSecret.secured", "secret");
         assertThat(underTest.clientSecret()).isEqualTo("secret");
     }
+
 
     @Test
     public void allow_users_to_sign_up() {
