@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.commons.lang3.text.WordUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONArray;

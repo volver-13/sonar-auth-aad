@@ -28,7 +28,6 @@ package org.almrangers.auth.aad;
 
 import java.util.Arrays;
 import java.util.List;
-
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.config.Settings;
 import org.sonar.api.server.ServerSide;

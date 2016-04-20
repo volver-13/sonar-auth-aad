@@ -29,7 +29,6 @@ package org.almrangers.auth.aad;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.sonar.api.SonarPlugin;
 
 public class AuthAadPlugin extends SonarPlugin {

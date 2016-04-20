@@ -26,4 +26,3 @@
  */
 
 package org.almrangers.auth.aad;
-

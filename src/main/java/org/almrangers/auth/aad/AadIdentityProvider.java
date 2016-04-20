@@ -31,7 +31,6 @@ import com.microsoft.aad.adal4j.AuthenticationContext;
 import com.microsoft.aad.adal4j.AuthenticationResult;
 import com.microsoft.aad.adal4j.ClientCredential;
 import com.microsoft.aad.adal4j.UserInfo;
-
 import java.net.HttpURLConnection;
 import java.net.URI;
 import java.net.URL;
@@ -41,7 +40,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import javax.servlet.http.HttpServletRequest;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.sonar.api.server.ServerSide;
@@ -53,7 +51,11 @@ import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
 import static java.lang.String.format;
-import static org.almrangers.auth.aad.AadSettings.*;
+import static org.almrangers.auth.aad.AadSettings.AUTH_REQUEST_FORMAT;
+import static org.almrangers.auth.aad.AadSettings.GROUPS_REQUEST_FORMAT;
+import static org.almrangers.auth.aad.AadSettings.LOGIN_STRATEGY_PROVIDER_ID;
+import static org.almrangers.auth.aad.AadSettings.LOGIN_STRATEGY_UNIQUE;
+import static org.almrangers.auth.aad.AadSettings.SECURE_RESOURCE_URL;
 
 @ServerSide
 public class AadIdentityProvider implements OAuth2IdentityProvider {
