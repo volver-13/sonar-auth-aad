@@ -1,5 +1,5 @@
 # Azure Active Directory (AAD) Authentication Plug-in for SonarQube #
-
+[![Build Status](https://api.travis-ci.org/SonarQubeCommunity/sonar-auth-aad.svg)](https://travis-ci.org/SonarQubeCommunity/sonar-auth-aad)
 
 ## Description ##
 This plug-in enables Azure Active Directory (AAD) users to automatically be sign up (a login is created if they don’t have one already) and authenticated on a SonarQube server.
