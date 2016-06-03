@@ -41,65 +41,43 @@ Proxy](http://docs.sonarqube.org/display/SONAR/Securing+the+Server+Behind+a+Prox
 
 6.  Click **Add an application my organization is developing**.
 
-7.  Enter a friendly name for the application, for example
-    `AzureADLoginProviderForSonarQube`, select "**Web Application and/or Web
-    API**", then go to step 2 of the AAD application wizard.
+7.  Enter a friendly name for the application, for example `AzureADLoginProviderForSonarQube`, select "**Web Application and/or Web API**", then go to step 2 of the AAD application wizard.
 
-8.  For the **Sign-on URL**, enter the base URL for your SonarQube Server,
-    example `https://localhost:9090`. You can change this later as needed.
+8.  For the **Sign-on URL**, enter the base URL for your SonarQube Server, example `https://localhost:9090`. You can change this later as needed.
 
-9.  For the **App ID URI**, enter
-    `https://<your_tenant_name>/<your_application_name>` replacing
-    `<your_tenant_name>` with the name of your Azure AD tenant selected in \#3
-    and `<your_application_name>` the name of your application provided in \#7.
-    Click **OK** to complete the registration.
+9.  For the **App ID URI**, enter `https://<your_tenant_name>/<your_application_name>` replacing `<your_tenant_name>` with the name of your Azure AD tenant selected in \#3 and `<your_application_name>` the name of your application provided in \#7. Click **OK** to complete the registration.
 
-10. While you are still in the Azure portal, click the **Configure** tab of your
-    application.
+10. While you are still in the Azure portal, click the **Configure** tab of your application.
 
-11. In **Reply URL**, remove the existing URL. Add SonarQube Server URL and
-    append `https://<SonarQube_ServerURL>/oauth2/callback`, example
-    `https://localhost:9090/oauth2/callback`
+11. In **Reply URL**, remove the existing URL. Add SonarQube Server URL and append `https://<SonarQube_ServerURL>/oauth2/callback`, example `https://localhost:9090/oauth2/callback`
 
-12. Under the **keys** section, create a key for your application with 1 year
-    expiry duration.
+12. Under the **keys** section, create a key for your application with 1 year expiry duration.
 
-13. Under **Permissions to other applications** section, make sure the
-    application has access to **Windows Azure Active Directory**. **Sign in and
-    read user profile** delegated permissions should be selected.
+13. Under **Permissions to other applications** section, make sure the application has access to **Windows Azure Active Directory**. **Sign in and read user profile** delegated permissions should be selected.
 
-    ![Singin permission](./_img/singin-permission.png)
+	![Singin permission](./_img/singin-permission.png)
 
-14. If you enabled group synchronization, make sure the application has access
-    to **Windows Azure Active Directory**. **Read all groups** delegated
-    permissions should be selected.
+14. If you enabled group synchronization, make sure the application has access to **Windows Azure Active Directory**. **Read all groups** delegated permissions should be selected.
 
-    ![groups permission](./_img/groups_sync.png)
+	![groups permission](./_img/groups_sync.png)
 
->   **NOTE:** Only grant this permission if you're planning to use groups
->   synchronization feature, and always avoid grant the application unnecessary
->   permissions. In some cases, grant the application additional permissions
->   will requires an administrator (at the tenant level) give a consent to allow
->   your application to use such permissions. If the consent of an administrator
->   was not given and a non-administrator user tries to login to the application
->   while group synchronization feature is on, user will receive the following
->   error message : **AADSTS90093 – Calling principal cannot consent due to lack
->   of permissions**. For more information please read [Permission scopes | Graph API concepts](https://msdn.microsoft.com/en-us/library/azure/ad/graph/howto/azure-ad-graph-api-permission-scopes)
+	>   **NOTE:** Only grant this permission if you're planning to use groups
+	>   synchronization feature, and always avoid grant the application unnecessary
+	>   permissions. In some cases, grant the application additional permissions
+	>   will requires an administrator (at the tenant level) give a consent to allow
+	>   your application to use such permissions. If the consent of an administrator
+	>   was not given and a non-administrator user tries to login to the application
+	>   while group synchronization feature is on, user will receive the following
+	>   error message : **AADSTS90093 – Calling principal cannot consent due to lack
+	>   of permissions**. For more information please read [Permission scopes | Graph API concepts](https://msdn.microsoft.com/en-us/library/azure/ad/graph/howto/azure-ad-graph-api-permission-scopes)
 
-1.  If your application is a single tenant application, you need to provide the
-    tenant id in the provider settings. You can retrieve the tenant id by
-    selecting **View endpoints** at the bottom of the screen and retrieving the
-    id as shown below.
+1.  If your application is a single tenant application, you need to provide the tenant id in the provider settings. You can retrieve the tenant id by selecting **View endpoints** at the bottom of the screen and retrieving the id as shown below.
 
-![](./_img/save-tenant.png)
+	![](./_img/save-tenant.png)
 
+1.  Make a note of the **Client ID**, **Key**, and **tenant Id**. You will need this later when you configure your application. 
 
-1.  Make a note of the **Client ID**, **Key**, and **tenant Id**. You will need
-    this later when you configure your application. 
-
-For a more detailed walkthrough, [Create Active Directory application and
-service principal using
-portal](https://azure.microsoft.com/en-us/documentation/articles/resource-group-create-service-principal-portal/)
+For a more detailed walkthrough, [Create Active Directory application and service principal using portal](https://azure.microsoft.com/en-us/documentation/articles/resource-group-create-service-principal-portal/).
 
 Installation and configurations
 -------------------------------
@@ -120,34 +98,27 @@ Installation and configurations
 3.  Click **Azure Active Directory** under **Category** menu, and provide the
     following values:
 
-    1.  Set the **Enabled** property to true
+	1.  Set the **Enabled** property to true
 
-    2.  Set the**Client ID** from the value provided by the Azure AD
-        application.
+	2.  Set the**Client ID** from the value provided by the Azure AD application.
 
-    3.  Set the **Client Secret** from the value provided by the Azure AD
-        application.
+	3.  Set the **Client Secret** from the value provided by the Azure AD application.
 
-    4.  Set the **Multi-tenant Azure Application** value based on the
-        configuration of the Azure application.
+	4.  Set the **Multi-tenant Azure Application** value based on the configuration of the Azure application.
 
-    5.  For a single tenant application, set the **Tenant ID** to the Azure AD
-        tenant Id.
+	 5.  For a single tenant application, set the **Tenant ID** to the Azure AD tenant Id.
 
-    6.  Set **Login generation strategy** value:
+	6.  Set **Login generation strategy** value:
 
-        1.  '**Unique**', the user's login will be auto-generated the first time
-            so that it is unique.
+		1.  '**Unique**', the user's login will be auto-generated the first time so that it is unique.
 
-        2.  '**Same as Azure AD login**', the user's login will be the Azure AD
-            login.
+		2.  '**Same as Azure AD login**', the user's login will be the Azure AD login.
 
-4.  Click **Save Authentication Settings**.
+	4.  Click **Save Authentication Settings**.
 
-5.  Sign out and go to the log in form. A new button named "**Log in with Azure
-    AD**" allows users to sign in with their Azure AD account.
+	5.  Sign out and go to the log in form. A new button named "**Log in with Azure AD**" allows users to sign in with their Azure AD account.
 
-    ![Login with Azure AD](./_img/loginwithAD.png)
+	![Login with Azure AD](./_img/loginwithAD.png)
 
 ### General Configurations
 
@@ -174,23 +145,10 @@ Installation and configurations
 Additional Configurations
 -------------------------
 
-1.  **Customize Profile Picture** This can be simply done by linking your email
-    to an existing Gravitar account or by creating a new one. In SonarQube
-    Gravitar support is enabled by default, using gravitar.com. You can
-    configure a different server or disable the feature altogether. Refer to
-    [Look and Feel](http://docs.sonarqube.org/display/SONAR/Look+and+Feel)
+1.  **Customize Profile Picture** This can be simply done by linking your email to an existing Gravitar account or by creating a new one. In SonarQube Gravitar support is enabled by default, using gravitar.com. You can configure a different server or disable the feature altogether. Refer to [Look and Feel](http://docs.sonarqube.org/display/SONAR/Look+and+Feel)
 
-2.  **Managing AAD users access to SonarQube** To restrict access to SonarQube
-    to a given group of AAD users, there are currently two ways to do so:
+2.  **Managing AAD users access to SonarQube** To restrict access to SonarQube to a given group of AAD users, there are currently two ways to do so:
 
-    1.  **From SonarQube Server**, set "Allow Users to SignUp" property to False
-        in AAD settings. When set to 'false', only existing local/AAD users will
-        be able to authenticate to the server. SonarQube Administrator can add
-        local users manually to the server. refer to
-        [Authentication](http://docs.sonarqube.org/display/SONAR/Authentication)
+	1.  **From SonarQube Server**, set "Allow Users to SignUp" property to False in AAD settings. When set to 'false', only existing local/AAD users will be able to authenticate to the server. SonarQube Administrator can add local users manually to the server. refer to [Authentication](http://docs.sonarqube.org/display/SONAR/Authentication)
 
-    2.  **From Azure Active Directory Application settings**, restricting the
-        access to the Azure application you created in "Create Active Directory
-        application under your Azure Active Directory tenant" section. Refer to
-        [Managing access to
-        apps](https://azure.microsoft.com/en-us/documentation/articles/active-directory-managing-access-to-apps)
+	2.  **From Azure Active Directory Application settings**, restricting the access to the Azure application you created in "Create Active Directory application under your Azure Active Directory tenant" section. Refer to [Managing access to apps](https://azure.microsoft.com/en-us/documentation/articles/active-directory-managing-access-to-apps)
