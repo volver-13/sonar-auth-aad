@@ -53,7 +53,7 @@ public class AadSettings {
 
   static final String CATEGORY = "Azure Active Directory";
   static final String SUBCATEGORY = "Authentication";
-  static final String GROUPSYNCSUBCATEGORY = "Groups Syncronization";
+  static final String GROUPSYNCSUBCATEGORY = "Groups Synchronization";
 
   static final String ROOT_URL = "https://login.microsoftonline.com";
   static final String AUTHORIZATION_URL = "oauth2/authorize";
