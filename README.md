@@ -152,3 +152,22 @@ Additional Configurations
 	1.  **From SonarQube Server**, set "Allow Users to SignUp" property to False in AAD settings. When set to 'false', only existing local/AAD users will be able to authenticate to the server. SonarQube Administrator can add local users manually to the server. refer to [Authentication](http://docs.sonarqube.org/display/SONAR/Authentication)
 
 	2.  **From Azure Active Directory Application settings**, restricting the access to the Azure application you created in "Create Active Directory application under your Azure Active Directory tenant" section. Refer to [Managing access to apps](https://azure.microsoft.com/en-us/documentation/articles/active-directory-managing-access-to-apps)
+
+
+Troubleshooting
+--------------------
+* Some users havving IIS as a reverse proxy reported getting an HTTP 404 error while submitting a new project analysis  when the size of the SonarQube analysis report was too big. This was due to IIS max request length (set to 1000000 bytes (9.5MB) by default).
+	To increase the *max request length* on IIS:
+	1. Connect to the server
+	2. Highlight the server in the "Connections" pane, and double-click on "request filtering"
+	3. In the "Actions" pane, click "Edit Feature Settings..."
+	4. Modify the "Maximum allowed content length" field to the desired maximum size in bytes
+	
+* Some users having IIS as a reverse proxy with SSL certificate following the tutorial [Configure SSL for SonarQube on Windows](http://blog.jessehouwing.nl/2016/02/configure-ssl-for-sonarqube-on-windows.html) when try to login with Azure Active Directory the URL has as hostname the same as default domain.
+	To perform login without this issue:
+	1. Go to the windows server.
+	2. Open IIS Manager (Internet Information Services Manager).
+	3. Highlight the server in the "Connections" pane, and double-click on "Application Request Routing Cache"
+	4. In the "Actions" pane, click "Server Proxy Settings..."
+	5. Uncheck "Reverse rewrite host in response headers"
+Then, when you click on **Log in with Azure AD** in Login page, the redirection to login.microsoftonline.com correctly.
