@@ -84,8 +84,8 @@ Installation and configurations
 
 ### Install Azure AD Authentication plug-in
 
-1.  Download and Copy **sonar-auth-aad-plugin-1.0-SNAPSHOT** to SonarQube server
-    plugin folder under extensions folder.
+1.  Download and Copy **sonar-auth-aad-plugin-1.0** to SonarQube server
+    plugin folder under extensions folder. You can download the plugin from SonarQube Update Center or from GitHub https://github.com/SonarQubeCommunity/sonar-auth-aad/releases
 
 2.  **Restart** SonarQube Server
 
