@@ -49,7 +49,7 @@ Proxy](http://docs.sonarqube.org/display/SONAR/Securing+the+Server+Behind+a+Prox
 
 10. While you are still in the Azure portal, click the **Configure** tab of your application.
 
-11. In **Reply URL**, remove the existing URL. Add SonarQube Server URL and append `https://<SonarQube_ServerURL>/oauth2/callback`, example `https://localhost:9090/oauth2/callback`
+11. In **Reply URL**, remove the existing URL. Add SonarQube Server URL and append `https://<SonarQube_ServerURL>/oauth2/callback/aad`, example `https://localhost:9090/oauth2/callback/aad`
 
 12. Under the **keys** section, create a key for your application with 1 year expiry duration.
 
