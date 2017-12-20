@@ -1,21 +1,21 @@
 /**
  * Azure Active Directory Authentication Plugin for SonarQube
-
+ * <p>
  * Copyright (c) 2016 Microsoft Corporation
  * All rights reserved.
- *
+ * <p>
  * The MIT License (MIT)
-
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
-
+ * <p>
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
-
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -59,9 +59,10 @@ import static org.almrangers.auth.aad.AadSettings.SECURE_RESOURCE_URL;
 
 @ServerSide
 public class AadIdentityProvider implements OAuth2IdentityProvider {
-  public static final String KEY = "aad";
-  public static final String NAME = "Azure AD";
+  private static final String KEY = "aad";
+  private static final String NAME = "Azure AD";
   private static final Logger LOGGER = Loggers.get(AadIdentityProvider.class);
+
   private final AadSettings settings;
 
   public AadIdentityProvider(AadSettings settings) {
@@ -129,8 +130,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
         .setEmail(aadUser.getDisplayableId());
       if (settings.enableGroupSync()) {
         userGroups = getUserGroupsMembership(result.getAccessToken(), result.getUserInfo().getUniqueId());
-        if (userGroups != null)
-          userIdentityBuilder.setGroups(userGroups);
+        userIdentityBuilder.setGroups(userGroups);
       }
       context.authenticate(userIdentityBuilder.build());
       context.redirectToRequestedPage();

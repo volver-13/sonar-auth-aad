@@ -1,21 +1,21 @@
 /**
  * Azure Active Directory Authentication Plugin for SonarQube
-
+ * <p>
  * Copyright (c) 2016 Microsoft Corporation
  * All rights reserved.
- *
+ * <p>
  * The MIT License (MIT)
-
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
-
+ * <p>
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
-
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -39,30 +39,30 @@ import static org.sonar.api.PropertyType.SINGLE_SELECT_LIST;
 
 @ServerSide
 public class AadSettings {
-  static final String CLIENT_ID = "sonar.auth.aad.clientId.secured";
-  static final String CLIENT_SECRET = "sonar.auth.aad.clientSecret.secured";
-  static final String ENABLED = "sonar.auth.aad.enabled";
-  static final String ALLOW_USERS_TO_SIGN_UP = "sonar.auth.aad.allowUsersToSignUp";
-  static final String TENANT_ID = "sonar.auth.aad.tenantId";
-  static final String ENABLE_GROUPS_SYNC = "sonar.auth.aad.enableGroupsSync";
-  static final String LOGIN_STRATEGY = "sonar.auth.aad.loginStrategy";
-  static final String LOGIN_STRATEGY_UNIQUE = "Unique";
-  static final String LOGIN_STRATEGY_PROVIDER_ID = "Same as Azure AD login";
-  static final String LOGIN_STRATEGY_DEFAULT_VALUE = LOGIN_STRATEGY_UNIQUE;
-  static final String MULTI_TENANT = "sonar.auth.aad.multiTenant";
+  protected static final String CLIENT_ID = "sonar.auth.aad.clientId.secured";
+  protected static final String CLIENT_SECRET = "sonar.auth.aad.clientSecret.secured";
+  protected static final String ENABLED = "sonar.auth.aad.enabled";
+  protected static final String ALLOW_USERS_TO_SIGN_UP = "sonar.auth.aad.allowUsersToSignUp";
+  protected static final String TENANT_ID = "sonar.auth.aad.tenantId";
+  protected static final String ENABLE_GROUPS_SYNC = "sonar.auth.aad.enableGroupsSync";
+  protected static final String LOGIN_STRATEGY = "sonar.auth.aad.loginStrategy";
+  protected static final String LOGIN_STRATEGY_UNIQUE = "Unique";
+  protected static final String LOGIN_STRATEGY_PROVIDER_ID = "Same as Azure AD login";
+  protected static final String LOGIN_STRATEGY_DEFAULT_VALUE = LOGIN_STRATEGY_UNIQUE;
+  protected static final String MULTI_TENANT = "sonar.auth.aad.multiTenant";
 
-  static final String CATEGORY = "Azure Active Directory";
-  static final String SUBCATEGORY = "Authentication";
-  static final String GROUPSYNCSUBCATEGORY = "Groups Synchronization";
+  protected static final String CATEGORY = "Azure Active Directory";
+  protected static final String SUBCATEGORY = "Authentication";
+  protected static final String GROUPSYNCSUBCATEGORY = "Groups Synchronization";
 
-  static final String ROOT_URL = "https://login.microsoftonline.com";
-  static final String AUTHORIZATION_URL = "oauth2/authorize";
-  static final String AUTHORITY_URL = "oauth2/token";
-  static final String COMMON_URL = "common";
-  static final String SECURE_RESOURCE_URL = "https://graph.windows.net";
+  protected static final String ROOT_URL = "https://login.microsoftonline.com";
+  protected static final String AUTHORIZATION_URL = "oauth2/authorize";
+  protected static final String AUTHORITY_URL = "oauth2/token";
+  protected static final String COMMON_URL = "common";
+  protected static final String SECURE_RESOURCE_URL = "https://graph.windows.net";
 
-  static final String AUTH_REQUEST_FORMAT = "%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s";
-  static final String GROUPS_REQUEST_FORMAT = "https://graph.windows.net/%s/users/%s/memberOf?api-version=1.6";
+  protected static final String AUTH_REQUEST_FORMAT = "%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s";
+  protected static final String GROUPS_REQUEST_FORMAT = "https://graph.windows.net/%s/users/%s/memberOf?api-version=1.6";
 
   private final Settings settings;
 
@@ -123,7 +123,7 @@ public class AadSettings {
       PropertyDefinition.builder(LOGIN_STRATEGY)
         .name("Login generation strategy")
         .description(format("When the login strategy is set to '%s', the user's login will be auto-generated the first time so that it is unique. " +
-          "When the login strategy is set to '%s', the user's login will be the Azure AD login.",
+            "When the login strategy is set to '%s', the user's login will be the Azure AD login.",
           LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID))
         .category(CATEGORY)
         .subCategory(SUBCATEGORY)
@@ -134,9 +134,7 @@ public class AadSettings {
         .build(),
       PropertyDefinition.builder(ENABLE_GROUPS_SYNC)
         .name("Enable Groups Synchronization")
-        .description(format(
-          "Enable groups synchronization from Azure AD to SonarQube, For each Azure AD group user belongs to, the user will be associated to a group with the same name(if it exists) in SonarQube.",
-          LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID))
+        .description("Enable groups synchronization from Azure AD to SonarQube, For each Azure AD group user belongs to, the user will be associated to a group with the same name(if it exists) in SonarQube.")
         .category(CATEGORY)
         .subCategory(GROUPSYNCSUBCATEGORY)
         .type(BOOLEAN)
@@ -176,10 +174,11 @@ public class AadSettings {
   }
 
   private String getEndpoint() {
-    if (multiTenant())
+    if (multiTenant()) {
       return COMMON_URL;
-    else
+    } else {
       return tenantId();
+    }
   }
 
   public String authorizationUrl() {

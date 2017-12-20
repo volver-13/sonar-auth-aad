@@ -1,21 +1,21 @@
 /**
  * Azure Active Directory Authentication Plugin for SonarQube
-
+ * <p>
  * Copyright (c) 2016 Microsoft Corporation
  * All rights reserved.
- *
+ * <p>
  * The MIT License (MIT)
-
+ * <p>
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
  * copies of the Software, and to permit persons to whom the Software is
  * furnished to do so, subject to the following conditions:
-
+ * <p>
  * The above copyright notice and this permission notice shall be included in all
  * copies or substantial portions of the Software.
-
+ * <p>
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
  * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.sonar.api.config.Settings;
+import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.server.authentication.OAuth2IdentityProvider;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,12 +42,12 @@ public class AadIdentityProviderTest {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
-  Settings settings = new Settings();
+  Settings settings = new MapSettings();
   AadSettings aadSettings = new AadSettings(settings);
   AadIdentityProvider underTest = new AadIdentityProvider(aadSettings);
 
   @Test
-  public void check_fields() throws Exception {
+  public void check_fields() {
     assertThat(underTest.getKey()).isEqualTo("aad");
     assertThat(underTest.getName()).isEqualTo("Azure AD");
     assertThat(underTest.getDisplay().getIconPath()).isEqualTo("/static/authaad/azure.svg");
@@ -54,7 +55,7 @@ public class AadIdentityProviderTest {
   }
 
   @Test
-  public void init() throws Exception {
+  public void init() {
     setSettings(true);
     OAuth2IdentityProvider.InitContext context = mock(OAuth2IdentityProvider.InitContext.class);
     when(context.generateCsrfState()).thenReturn("state");
@@ -66,7 +67,7 @@ public class AadIdentityProviderTest {
   }
 
   @Test
-  public void is_enabled() throws Exception {
+  public void is_enabled() {
     settings.setProperty("sonar.auth.aad.clientId.secured", "id");
     settings.setProperty("sonar.auth.aad.clientSecret.secured", "secret");
     settings.setProperty("sonar.auth.aad.loginStrategy", AadSettings.LOGIN_STRATEGY_DEFAULT_VALUE);
