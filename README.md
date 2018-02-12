@@ -79,7 +79,7 @@ Installation and configurations
 
 1.  Download and Copy **sonar-auth-aad-plugin-1.0** to SonarQube server plugin folder under extensions folder. You can download the plugin from SonarQube Update Center or from GitHub https://github.com/SonarQubeCommunity/sonar-auth-aad/releases
 
-1..  **Restart** SonarQube Server
+1.  **Restart** SonarQube Server
 
 ### Configure Azure AD Authentication plugin
 
@@ -127,6 +127,8 @@ Installation and configurations
 | sonar.auth.aad.loginStrategy        | Login generation strategy      | When the login strategy is set to '**Unique**', the user's login will be auto-generated the first time so that it is unique. When the login strategy is set to '**Same as Azure AD login**', the user's login will be the Azure AD login. This last strategy allows, when changing the authentication provider, to keep existing users if logins from a new provider are the same as Azure AD). | Unique        |
 
 ### Groups Syncronization
+
+This feature was introduced in the 1.1-RC1 version of the plugin.
 
 ![Groups sync Settings](./_img/groups_sync_settings.png)
 
