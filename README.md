@@ -48,7 +48,7 @@ Proxy](http://docs.sonarqube.org/display/SONAR/Securing+the+Server+Behind+a+Prox
     1. In **Keys**, create a key for your application with 1 year expiry duration. Copy the value of the key, you will need later to set the **Client Secret**.
     1. In **Required permissions**, make sure the application has access to **Windows Azure Active Directory**. Check that **Sign in and read user profile** delegated permissions is selected, and add the **Read all users' basic profiles** permission. Don't forget to click on **Save**.
 
-	![Singin permission](./_img/permissions.png)
+	![Sign-in permission](./_img/permissions.png)
 
 1. If you enabled group synchronization, make sure the application has access to **Windows Azure Active Directory**. **Read all groups** delegated permissions should be selected.
 
@@ -64,7 +64,7 @@ Proxy](http://docs.sonarqube.org/display/SONAR/Securing+the+Server+Behind+a+Prox
 	>   error message : **AADSTS90093 – Calling principal cannot consent due to lack
 	>   of permissions**. For more information please read [Permission scopes | Graph API concepts](https://msdn.microsoft.com/en-us/library/azure/ad/graph/howto/azure-ad-graph-api-permission-scopes)
 
-1.  If your application is a single tenant application, you need to provide the tenant id in the provider settings. You can retrieve the tenant id by selecting **View endpoints** at the bottom of the screen and retrieving the id as shown below.
+1.  If your application is a single tenant application, you need to provide the tenant id in the provider settings. You can retrieve the tenant id by leaving the App Registration and navigating to the **Properties** section of the tenant and retrieving the **Directory ID** as shown below.
 
 	![](./_img/save-tenant.png)
 
