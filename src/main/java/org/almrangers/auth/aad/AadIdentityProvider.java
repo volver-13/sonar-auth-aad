@@ -32,6 +32,7 @@ import com.microsoft.aad.adal4j.AuthenticationResult;
 import com.microsoft.aad.adal4j.ClientCredential;
 import com.microsoft.aad.adal4j.UserInfo;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.HashSet;
@@ -154,10 +155,14 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
     }
   }
 
-  private Set<String> getUserGroupsMembership(String accessToken, String userId) {
+  URL getUrl(String userId) throws MalformedURLException {
+    return new URL(String.format(GROUPS_REQUEST_FORMAT, settings.tenantId(), userId));
+  }
+
+  public Set<String> getUserGroupsMembership(String accessToken, String userId) {
     Set<String> userGroups = new HashSet<>();
     try {
-      URL url = new URL(String.format(GROUPS_REQUEST_FORMAT, settings.tenantId(), userId));
+      URL url = getUrl(userId);
       HttpURLConnection connection = (HttpURLConnection) url.openConnection();
       connection.setRequestProperty("api-version", "1.6");
       connection.setRequestProperty("Authorization", accessToken);
