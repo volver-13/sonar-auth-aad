@@ -42,6 +42,16 @@ public class JSONHelper {
     return jsonObject.optJSONObject("responseMsg").optJSONArray("value");
   }
 
+  /**
+   * This method parses a JSON field out of a json object
+   *
+   * @param jsonObject The JSON String that holds the collection.
+   * @return next page link 
+   * @throws Exception
+   */
+  public static String fetchNextPageLink(JSONObject jsonObject) {
+    return jsonObject.optJSONObject("responseMsg").has("odata.nextLink") ? jsonObject.optJSONObject("responseMsg").get("odata.nextLink").toString() : null;
+  }
 
   /**
    * This is a generic method that copies the simple attribute values from an

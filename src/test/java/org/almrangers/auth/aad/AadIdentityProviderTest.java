@@ -65,9 +65,9 @@ public class AadIdentityProviderTest {
 	URL mockUrl = mock(URL.class);
 	HttpURLConnection mockConnection = mock(HttpURLConnection.class);
 
-	doReturn(mockUrl)
+	/*doReturn(mockUrl)
 	  .when(underTest)
-	  .getUrl("userId");
+	  .getUrl("userId", null);
 
 	doReturn (mockConnection)
 	  .when(mockUrl)
@@ -75,9 +75,10 @@ public class AadIdentityProviderTest {
 
 	doReturn(ClassLoader.class.getResourceAsStream("/get-members-page1.json"))
 	  .when(mockConnection)
-	  .getInputStream();
-
-	assertEquals(5, underTest.getUserGroupsMembership("accessToken", "userId").size());
+	  .getInputStream();*/
+	
+	settings.setProperty("sonar.auth.aad.tenantId", "tenant.id");
+	assertEquals(77, underTest.getUserGroupsMembership("token", "userId", new HashSet<String>(), null).size());
   }
 
   @Test
