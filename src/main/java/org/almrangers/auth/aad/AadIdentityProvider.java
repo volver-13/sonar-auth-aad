@@ -132,8 +132,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
         .setName(aadUser.getGivenName() + " " + aadUser.getFamilyName())
         .setEmail(aadUser.getDisplayableId());
       if (settings.enableGroupSync()) {
-    	userGroups = new HashSet<>();
-        userGroups = getUserGroupsMembership(result.getAccessToken(), result.getUserInfo().getUniqueId(), userGroups, null);
+        userGroups = getUserGroupsMembership(result.getAccessToken(), result.getUserInfo().getUniqueId());
         userIdentityBuilder.setGroups(userGroups);
       }
       context.authenticate(userIdentityBuilder.build());
@@ -167,37 +166,34 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
 	return new URL(url);
   }
 
-  public Set<String> getUserGroupsMembership(String accessToken, String userId, Set<String> userGroups, String nextPage) {
+  public Set<String> getUserGroupsMembership(String accessToken, String userId) {
+	Set<String> userGroups = new HashSet<>();
+	String nextPage = null;
     try {
-    	
-      URL url = getUrl(userId, nextPage);
-      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-      connection.setRequestProperty("api-version", "1.6");
-      connection.setRequestProperty("Authorization", accessToken);
-      connection.setRequestProperty("Accept", "application/json;odata=minimalmetadata");
-      String goodRespStr = HttpClientHelper.getResponseStringFromConn(connection, true);
-      int responseCode = connection.getResponseCode();
-      JSONObject response = HttpClientHelper.processGoodRespStr(responseCode, goodRespStr);
-      JSONArray groups;
-      groups = JSONHelper.fetchDirectoryObjectJSONArray(response);      
-      AadGroup group;
-      for (int i = 0; i < groups.length(); i++) {
-        JSONObject thisUserJSONObject = groups.optJSONObject(i);
-        group = new AadGroup();
-        JSONHelper.convertJSONObjectToDirectoryObject(thisUserJSONObject, group);
-        userGroups.add(group.getDisplayName());
-      }
-      if (StringUtils.isNotEmpty(JSONHelper.fetchNextPageLink(response))) {
-    	  getUserGroupsMembership(accessToken, userId, userGroups, getNextPageSuffix(JSONHelper.fetchNextPageLink(response).toString()));
-      }
+      do {
+    	  URL url = getUrl(userId, nextPage);
+	      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+	      connection.setRequestProperty("api-version", "1.6");
+	      connection.setRequestProperty("Authorization", accessToken);
+	      connection.setRequestProperty("Accept", "application/json;odata=minimalmetadata");
+	      String goodRespStr = HttpClientHelper.getResponseStringFromConn(connection, true);
+	      int responseCode = connection.getResponseCode();
+	      JSONObject response = HttpClientHelper.processGoodRespStr(responseCode, goodRespStr);
+	      JSONArray groups;
+	      groups = JSONHelper.fetchDirectoryObjectJSONArray(response);      
+	      AadGroup group;
+	      for (int i = 0; i < groups.length(); i++) {
+	        JSONObject thisUserJSONObject = groups.optJSONObject(i);
+	        group = new AadGroup();
+	        JSONHelper.convertJSONObjectToDirectoryObject(thisUserJSONObject, group);
+	        userGroups.add(group.getDisplayName());
+	      }
+	      nextPage = JSONHelper.fetchNextPageLink(response);
+      } while (StringUtils.isNotEmpty(nextPage));
     } catch (Exception e) {
       LOGGER.error(e.toString());
     }
     return userGroups;
-  }
-  
-  private String getNextPageSuffix(String nextPageLink) {
-	  return org.apache.commons.lang3.StringUtils.substringAfterLast(nextPageLink, "memberOf?");
   }
   
   private String generateUniqueLogin(UserInfo aadUser) {

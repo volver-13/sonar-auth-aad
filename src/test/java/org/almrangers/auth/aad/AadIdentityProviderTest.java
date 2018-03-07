@@ -88,7 +88,7 @@ public class AadIdentityProviderTest {
 	  .when(mockConnection2)
 	  .getInputStream();
 	
-	assertEquals(5, underTest.getUserGroupsMembership("token", "userId", new HashSet<String>(), null).size());
+	assertEquals(5, underTest.getUserGroupsMembership("token", "userId").size());
   }
 
   @Test

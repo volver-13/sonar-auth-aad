@@ -20,7 +20,7 @@
 package org.almrangers.auth.aad;
 
 import java.lang.reflect.Field;
-import org.apache.commons.lang3.text.WordUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -50,7 +50,7 @@ public class JSONHelper {
    * @throws Exception
    */
   public static String fetchNextPageLink(JSONObject jsonObject) {
-    return jsonObject.optJSONObject("responseMsg").has("odata.nextLink") ? jsonObject.optJSONObject("responseMsg").get("odata.nextLink").toString() : null;
+    return jsonObject.optJSONObject("responseMsg").has("odata.nextLink") ? StringUtils.substringAfterLast(jsonObject.optJSONObject("responseMsg").get("odata.nextLink").toString(), "memberOf?") : null;
   }
 
   /**
