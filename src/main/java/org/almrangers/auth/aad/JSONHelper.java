@@ -21,6 +21,7 @@ package org.almrangers.auth.aad;
 
 import java.lang.reflect.Field;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.text.WordUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
