@@ -63,7 +63,7 @@ public class AadIdentityProviderTest {
 
     underTest.init(context);
 
-    verify(context).redirectTo("https://login.microsoftonline.com/null/oauth2/authorize?client_id=id&response_type=code&redirect_uri=http://localhost/callback&state=state");
+    verify(context).redirectTo("https://login.microsoftonline.com/null/oauth2/authorize?client_id=id&response_type=code&redirect_uri=http://localhost/callback&state=state&scope=openid");
   }
 
   @Test

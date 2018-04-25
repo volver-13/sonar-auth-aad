@@ -61,7 +61,7 @@ public class AadSettings {
   protected static final String COMMON_URL = "common";
   protected static final String SECURE_RESOURCE_URL = "https://graph.windows.net";
 
-  protected static final String AUTH_REQUEST_FORMAT = "%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s";
+  protected static final String AUTH_REQUEST_FORMAT = "%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s&scope=openid";
   protected static final String GROUPS_REQUEST_FORMAT = "https://graph.windows.net/%s/users/%s/memberOf?api-version=1.6";
 
   private final Settings settings;
