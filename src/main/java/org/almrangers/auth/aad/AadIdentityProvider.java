@@ -127,7 +127,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
 
       UserInfo aadUser = result.getUserInfo();
       UserIdentity.Builder userIdentityBuilder = UserIdentity.builder()
-        .setProviderLogin(getName())
+        .setProviderLogin(aadUser.getDisplayableId())
         .setLogin(getLogin(aadUser))
         .setName(aadUser.getGivenName() + " " + aadUser.getFamilyName())
         .setEmail(aadUser.getDisplayableId());
