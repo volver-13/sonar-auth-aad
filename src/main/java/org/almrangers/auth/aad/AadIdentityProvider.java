@@ -173,9 +173,8 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
       do {
     	  URL url = getUrl(userId, nextPage);
 	      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-	      connection.setRequestProperty("api-version", "1.6");
 	      connection.setRequestProperty("Authorization", accessToken);
-	      connection.setRequestProperty("Accept", "application/json;odata=minimalmetadata");
+	      connection.setRequestProperty("Accept", "application/json;odata.metadata=minimal");
 	      String goodRespStr = HttpClientHelper.getResponseStringFromConn(connection, true);
 	      int responseCode = connection.getResponseCode();
 	      JSONObject response = HttpClientHelper.processGoodRespStr(responseCode, goodRespStr);
