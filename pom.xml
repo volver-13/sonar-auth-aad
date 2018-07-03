@@ -123,6 +123,7 @@
                 <extensions>true</extensions>
                 <configuration>
                     <pluginClass>org.almrangers.auth.aad.AuthAadPlugin</pluginClass>
+                    <addMavenDescriptor>false</addMavenDescriptor>
                 </configuration>
             </plugin>
         </plugins>
