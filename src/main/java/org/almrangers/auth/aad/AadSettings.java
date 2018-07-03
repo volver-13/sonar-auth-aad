@@ -62,7 +62,7 @@ public class AadSettings {
   protected static final String SECURE_RESOURCE_URL = "https://graph.microsoft.com";
 
   protected static final String AUTH_REQUEST_FORMAT = "%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s&scope=openid";
-  protected static final String GROUPS_REQUEST_FORMAT = "https://graph.microsoft.com/v1.0/%s/users/%s/memberOf";
+  protected static final String GROUPS_REQUEST_FORMAT = "/v1.0/%s/users/%s/memberOf";
 
   private final Settings settings;
 
@@ -187,6 +187,14 @@ public class AadSettings {
 
   public String authorityUrl() {
     return String.format("%s/%s/%s", ROOT_URL, getEndpoint(), AUTHORITY_URL);
+  }
+
+  public String getGraphURL() {
+    return SECURE_RESOURCE_URL;
+  }
+
+  public String getGraphMembershipUrl() {
+    return getGraphURL() + GROUPS_REQUEST_FORMAT;
   }
 
   public String loginStrategy() {
