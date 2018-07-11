@@ -63,7 +63,7 @@ import static org.almrangers.auth.aad.AadSettings.SECURE_RESOURCE_URL;
 @ServerSide
 public class AadIdentityProvider implements OAuth2IdentityProvider {
   private static final String KEY = "aad";
-  private static final String NAME = "Azure AD";
+  private static final String NAME = "Microsoft";
   private static final Logger LOGGER = Loggers.get(AadIdentityProvider.class);
 
   private final AadSettings settings;
@@ -75,8 +75,8 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
   @Override
   public Display getDisplay() {
     return Display.builder()
-      .setIconPath("/static/authaad/azure.svg")
-      .setBackgroundColor("#336699")
+      .setIconPath("/static/authaad/ms-symbol.svg")
+      .setBackgroundColor("#2F2F2F")
       .build();
   }
 
