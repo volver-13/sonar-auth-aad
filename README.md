@@ -36,37 +36,41 @@ Proxy](http://docs.sonarqube.org/display/SONAR/Securing+the+Server+Behind+a+Prox
 1.  Click **App registrations**, and then select **New application registration**
 
 1.  Follow the prompts to create a Web Application and/or WebAPI.
-	1.  Name describes the app to users, for example `SonarQube Azure Authentication`
-	1.  Application type should be "**Web app / API**"
-	1.  Sign-On URL is the base URL for your SonarQube Server, example `https://localhost:9000`. You can change this later as needed.
-	1.  Click on the **Create button**
+    1.  Name describes the app to users, for example `SonarQube Azure Authentication`
+    1.  Application type should be "**Web app / API**"
+    1.  Sign-On URL is the base URL for your SonarQube Server, example `https://localhost:9000`. You can change this later as needed.
+    1.  Click on the **Create button**
 
 1. After you've completed the registration, Azure AD assigns the app a unique application ID. Copy the value from the app page, you will need later to to set the **Client ID**.
 
 1. Go into the **Settings** page of your application
+
     1. In **Reply URL**, remove the existing URL. Add SonarQube Server URL and append `https://<SonarQube_ServerURL>/oauth2/callback/aad`, example `https://localhost:9000/oauth2/callback/aad`
     1. In **Keys**, create a key for your application with 1 year expiry duration. Copy the value of the key, you will need later to set the **Client Secret**.
-    1. In **Required permissions**, make sure the application has access to **Windows Azure Active Directory**. Check that **Sign in and read user profile** delegated permissions is selected, and add the **Read all users' basic profiles** permission. Don't forget to click on **Save**.
+    1. In **Required permissions**, make sure the application has access to **Windows Azure Active Directory** API. The following delegated permissions need to be enabled.
 
-	![Sign-in permission](./_img/permissions.png)
+        * Sign in and read user profile
+        * Read all users' basic profiles
 
-1. If you enabled group synchronization, make sure the application has access to **Windows Azure Active Directory**. **Read all groups** delegated permissions should be selected.
+    	![Sign-in permission](./_img/permissions.png)
 
-	![groups permission](./_img/groups_sync.png)
+1. If you enabled group synchronization, make sure the application has access to the **Windows Azure Active Directory** API. The following delegated permissions needs to be enabled.
 
-	>   **NOTE:** Only grant this permission if you're planning to use groups
-	>   synchronization feature, and always avoid grant the application unnecessary
-	>   permissions. In some cases, grant the application additional permissions
-	>   will requires an administrator (at the tenant level) give a consent to allow
-	>   your application to use such permissions. If the consent of an administrator
-	>   was not given and a non-administrator user tries to login to the application
-	>   while group synchronization feature is on, user will receive the following
-	>   error message : **AADSTS90093 – Calling principal cannot consent due to lack
-	>   of permissions**. For more information please read [Permission scopes | Graph API concepts](https://msdn.microsoft.com/en-us/library/azure/ad/graph/howto/azure-ad-graph-api-permission-scopes)
+    * Read directory data
+    * Read all user's basic profiles
+    * Sign in and read user profile
+
+    	![groups permission](./_img/groups_sync.png)
+
+	> It's best security practice to grant your registered applications the least amount of privileges possible. If you don't plan on using the group synchronization feature, avoid enabling the "Read directory data" permission.
+
+    Once this is enabled, you will need to create new Azure groups of the type "Security". The names of these groups need to correspond to the names of the groups in SonarQube. Once you've created the groups, add your Azure users to it.
+
+    Lastly, you still need to grant users access to your registered application. You can add them by going to Enterprise applications, your application's name (whatever you named your application when registering it), Users and groups, then finally click "Add user" at the top.
 
 1.  If your application is a single tenant application, you need to provide the tenant id in the provider settings. You can retrieve the tenant id by leaving the App Registration and navigating to the **Properties** section of the tenant and retrieving the **Directory ID** as shown below.
 
-	![](./_img/save-tenant.png)
+    ![](./_img/save-tenant.png)
 
 1.  Make a note of the **Application ID**, **Key** value, and **tenant Id**. You will need this later when you configure your application. 
 
@@ -90,27 +94,27 @@ Installation and configurations
 1.  Click **Azure Active Directory** under **Category** menu, and provide the
     following values:
 
-	1.  Set the **Enabled** property to true
+    1.  Set the **Enabled** property to true
 
-	1.  Set the **Client ID** from the value provided by the Azure AD application (Application ID).
+    1.  Set the **Client ID** from the value provided by the Azure AD application (Application ID).
 
-	1.  Set the **Client Secret** from the value provided by the Azure AD application.
+    1.  Set the **Client Secret** from the value provided by the Azure AD application.
 
-	1.  Set the **Multi-tenant Azure Application** value based on the configuration of the Azure application.
+    1.  Set the **Multi-tenant Azure Application** value based on the configuration of the Azure application.
 
-	1.  For a single tenant application, set the **Tenant ID** to the Azure AD tenant Id.
+    1.  For a single tenant application, set the **Tenant ID** to the Azure AD tenant Id.
 
-	1.  Set **Login generation strategy** value:
+    1.  Set **Login generation strategy** value:
 
-		1.  '**Unique**', the user's login will be auto-generated the first time so that it is unique.
+        1.  '**Unique**', the user's login will be auto-generated the first time so that it is unique.
 
-		1.  '**Same as Azure AD login**', the user's login will be the Azure AD login.
+        1.  '**Same as Azure AD login**', the user's login will be the Azure AD login.
 
-	1.  Click **Save Authentication Settings**.
+    1.  Click **Save Authentication Settings**.
 
-	1.  Sign out and go to the log in form. A new button named "**Log in with Azure AD**" allows users to sign in with their Azure AD account.
+    1.  Sign out and go to the log in form. A new button named "**Log in with Azure AD**" allows users to sign in with their Azure AD account.
 
-	![Login with Azure AD](./_img/loginwithAD.png)
+    ![Login with Azure AD](./_img/loginwithAD.png)
 
 ### General Configurations
 
@@ -143,25 +147,25 @@ Additional Configurations
 
 1.  **Managing AAD users access to SonarQube** To restrict access to SonarQube to a given group of AAD users, there are currently two ways to do so:
 
-	1.  **From SonarQube Server**, set "Allow Users to SignUp" property to False in AAD settings. When set to 'false', only existing local/AAD users will be able to authenticate to the server. SonarQube Administrator can add local users manually to the server. refer to [Authentication](http://docs.sonarqube.org/display/SONAR/Authentication)
+    1.  **From SonarQube Server**, set "Allow Users to SignUp" property to False in AAD settings. When set to 'false', only existing local/AAD users will be able to authenticate to the server. SonarQube Administrator can add local users manually to the server. refer to [Authentication](http://docs.sonarqube.org/display/SONAR/Authentication)
 
-	1.  **From Azure Active Directory Application settings**, restricting the access to the Azure application you created in "Create Active Directory application under your Azure Active Directory tenant" section. Refer to [Managing access to apps](https://azure.microsoft.com/en-us/documentation/articles/active-directory-managing-access-to-apps)
+    1.  **From Azure Active Directory Application settings**, restricting the access to the Azure application you created in "Create Active Directory application under your Azure Active Directory tenant" section. Refer to [Managing access to apps](https://azure.microsoft.com/en-us/documentation/articles/active-directory-managing-access-to-apps)
 
 
 Troubleshooting
 --------------------
 * Some users havving IIS as a reverse proxy reported getting an HTTP 404 error while submitting a new project analysis  when the size of the SonarQube analysis report was too big. This was due to IIS max request length (set to 1000000 bytes (9.5MB) by default).
-	To increase the *max request length* on IIS:
-	1. Connect to the server
-	1. Highlight the server in the "Connections" pane, and double-click on "request filtering"
-	1. In the "Actions" pane, click "Edit Feature Settings..."
-	1. Modify the "Maximum allowed content length" field to the desired maximum size in bytes
+    To increase the *max request length* on IIS:
+    1. Connect to the server
+    1. Highlight the server in the "Connections" pane, and double-click on "request filtering"
+    1. In the "Actions" pane, click "Edit Feature Settings..."
+    1. Modify the "Maximum allowed content length" field to the desired maximum size in bytes
 
 * Some users having IIS as a reverse proxy with SSL certificate following the tutorial [Configure SSL for SonarQube on Windows](http://blog.jessehouwing.nl/2016/02/configure-ssl-for-sonarqube-on-windows.html) when try to login with Azure Active Directory the URL has as hostname the same as default domain.
-	To perform login without this issue:
-	1. Go to the windows server.
-	1. Open IIS Manager (Internet Information Services Manager).
-	1. Highlight the server in the "Connections" pane, and double-click on "Application Request Routing Cache"
-	1. In the "Actions" pane, click "Server Proxy Settings..."
-	1. Uncheck "Reverse rewrite host in response headers"
+    To perform login without this issue:
+    1. Go to the windows server.
+    1. Open IIS Manager (Internet Information Services Manager).
+    1. Highlight the server in the "Connections" pane, and double-click on "Application Request Routing Cache"
+    1. In the "Actions" pane, click "Server Proxy Settings..."
+    1. Uncheck "Reverse rewrite host in response headers"
 Then, when you click on **Log in with Azure AD** in Login page, the redirection to login.microsoftonline.com correctly.
