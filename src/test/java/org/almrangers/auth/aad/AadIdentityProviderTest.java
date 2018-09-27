@@ -128,6 +128,7 @@ public class AadIdentityProviderTest {
       settings.setProperty("sonar.auth.aad.clientId.secured", "id");
       settings.setProperty("sonar.auth.aad.clientSecret.secured", "secret");
       settings.setProperty("sonar.auth.aad.loginStrategy", AadSettings.LOGIN_STRATEGY_DEFAULT_VALUE);
+      settings.setProperty("sonar.auth.aad.directoryLocation", AadSettings.DIRECTORY_LOC_GLOBAL);
       settings.setProperty("sonar.auth.aad.enabled", true);
     } else {
       settings.setProperty("sonar.auth.aad.enabled", false);
