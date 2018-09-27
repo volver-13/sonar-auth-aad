@@ -108,9 +108,9 @@ Installation and configurations
 
 	1.  Click **Save Authentication Settings**.
 
-	1.  Sign out and go to the log in form. A new button named "**Log in with Azure AD**" allows users to sign in with their Azure AD account.
+	1.  Sign out and go to the log in form. A new button named "**Log in with Microsoft**" allows users to sign in with their Azure AD account. For login with username and password, clicking "More options" reveals the login form.
 
-	![Login with Azure AD](./_img/loginwithAD.png)
+	![Login with Microsoft](./_img/loginwithAD.png)
 
 ### General Configurations
 
