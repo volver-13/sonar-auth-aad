@@ -44,6 +44,11 @@ public class AadSettings {
   protected static final String ENABLED = "sonar.auth.aad.enabled";
   protected static final String ALLOW_USERS_TO_SIGN_UP = "sonar.auth.aad.allowUsersToSignUp";
   protected static final String TENANT_ID = "sonar.auth.aad.tenantId";
+  protected static final String DIRECTORY_LOCATION = "sonar.auth.aad.directoryLocation";
+  protected static final String DIRECTORY_LOC_GLOBAL = "Azure AD (Global)";
+  protected static final String DIRECTORY_LOC_USGOV = "Azure AD for US Government";
+  protected static final String DIRECTORY_LOC_DE = "Azure AD for Germany";
+  protected static final String DIRECTORY_LOC_CN = "Azure AD China";
   protected static final String ENABLE_GROUPS_SYNC = "sonar.auth.aad.enableGroupsSync";
   protected static final String LOGIN_STRATEGY = "sonar.auth.aad.loginStrategy";
   protected static final String LOGIN_STRATEGY_UNIQUE = "Unique";
@@ -55,14 +60,20 @@ public class AadSettings {
   protected static final String SUBCATEGORY = "Authentication";
   protected static final String GROUPSYNCSUBCATEGORY = "Groups Synchronization";
 
-  protected static final String ROOT_URL = "https://login.microsoftonline.com";
+  protected static final String LOGIN_URL = "https://login.microsoftonline.com";
+  protected static final String LOGIN_URL_USGOV = "https://login.microsoftonline.us";
+  protected static final String LOGIN_URL_DE = "https://login.microsoftonline.de";
+  protected static final String LOGIN_URL_CN = "https://login.chinacloudapi.cn";
   protected static final String AUTHORIZATION_URL = "oauth2/authorize";
   protected static final String AUTHORITY_URL = "oauth2/token";
   protected static final String COMMON_URL = "common";
-  protected static final String SECURE_RESOURCE_URL = "https://graph.windows.net";
 
+  protected static final String GRAPH_URL = "https://graph.microsoft.com";
+  protected static final String GRAPH_URL_USGOV = "https://graph.microsoft.com";
+  protected static final String GRAPH_URL_DE = "https://graph.microsoft.de";
+  protected static final String GRAPH_URL_CN = "https://microsoftgraph.chinacloudapi.cn";
   protected static final String AUTH_REQUEST_FORMAT = "%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s&scope=openid";
-  protected static final String GROUPS_REQUEST_FORMAT = "https://graph.windows.net/%s/users/%s/memberOf?api-version=1.6";
+  protected static final String GROUPS_REQUEST_FORMAT = "/v1.0/%s/users/%s/memberOf";
 
   private final Settings settings;
 
@@ -132,6 +143,16 @@ public class AadSettings {
         .options(LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID)
         .index(7)
         .build(),
+      PropertyDefinition.builder(DIRECTORY_LOCATION)
+        .name("Directory Location")
+        .description("The location of the Azure installation. You normally won't need to change this.")
+        .category(CATEGORY)
+        .subCategory(SUBCATEGORY)
+        .type(SINGLE_SELECT_LIST)
+        .defaultValue(DIRECTORY_LOC_GLOBAL)
+        .options(DIRECTORY_LOC_GLOBAL, DIRECTORY_LOC_USGOV, DIRECTORY_LOC_DE, DIRECTORY_LOC_CN)
+        .index(8)
+        .build(),
       PropertyDefinition.builder(ENABLE_GROUPS_SYNC)
         .name("Enable Groups Synchronization")
         .description("Enable groups synchronization from Azure AD to SonarQube, For each Azure AD group user belongs to, the user will be associated to a group with the same name(if it exists) in SonarQube.")
@@ -139,7 +160,7 @@ public class AadSettings {
         .subCategory(GROUPSYNCSUBCATEGORY)
         .type(BOOLEAN)
         .defaultValue(valueOf(false))
-        .index(8)
+        .index(9)
         .build()
 
     );
@@ -181,12 +202,54 @@ public class AadSettings {
     }
   }
 
+  private String getLoginHost() {
+    String directoryLocation = settings.getString(DIRECTORY_LOCATION);
+
+    switch (directoryLocation) {
+      case DIRECTORY_LOC_USGOV:
+        return LOGIN_URL_USGOV;
+
+      case DIRECTORY_LOC_DE:
+        return LOGIN_URL_DE;
+
+      case DIRECTORY_LOC_CN:
+        return LOGIN_URL_CN;
+
+      case DIRECTORY_LOC_GLOBAL:
+      default:
+        return LOGIN_URL;
+    }
+  }
+
   public String authorizationUrl() {
-    return String.format("%s/%s/%s", ROOT_URL, getEndpoint(), AUTHORIZATION_URL);
+    return String.format("%s/%s/%s", getLoginHost(), getEndpoint(), AUTHORIZATION_URL);
   }
 
   public String authorityUrl() {
-    return String.format("%s/%s/%s", ROOT_URL, getEndpoint(), AUTHORITY_URL);
+    return String.format("%s/%s/%s", getLoginHost(), getEndpoint(), AUTHORITY_URL);
+  }
+
+  public String getGraphURL() {
+    String directoryLocation = settings.getString(DIRECTORY_LOCATION);
+
+    switch (directoryLocation) {
+      case DIRECTORY_LOC_USGOV:
+        return GRAPH_URL_USGOV;
+
+      case DIRECTORY_LOC_DE:
+        return GRAPH_URL_DE;
+
+      case DIRECTORY_LOC_CN:
+        return GRAPH_URL_CN;
+
+      case DIRECTORY_LOC_GLOBAL:
+      default:
+        return GRAPH_URL;
+    }
+  }
+
+  public String getGraphMembershipUrl() {
+    return getGraphURL() + GROUPS_REQUEST_FORMAT;
   }
 
   public String loginStrategy() {

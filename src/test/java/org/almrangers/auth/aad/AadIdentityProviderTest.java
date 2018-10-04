@@ -94,9 +94,9 @@ public class AadIdentityProviderTest {
   @Test
   public void check_fields() {
     assertThat(underTest.getKey()).isEqualTo("aad");
-    assertThat(underTest.getName()).isEqualTo("Azure AD");
-    assertThat(underTest.getDisplay().getIconPath()).isEqualTo("/static/authaad/azure.svg");
-    assertThat(underTest.getDisplay().getBackgroundColor()).isEqualTo("#336699");
+    assertThat(underTest.getName()).isEqualTo("Microsoft");
+    assertThat(underTest.getDisplay().getIconPath()).isEqualTo("/static/authaad/ms-symbol.svg");
+    assertThat(underTest.getDisplay().getBackgroundColor()).isEqualTo("#2F2F2F");
   }
 
   @Test
@@ -128,6 +128,7 @@ public class AadIdentityProviderTest {
       settings.setProperty("sonar.auth.aad.clientId.secured", "id");
       settings.setProperty("sonar.auth.aad.clientSecret.secured", "secret");
       settings.setProperty("sonar.auth.aad.loginStrategy", AadSettings.LOGIN_STRATEGY_DEFAULT_VALUE);
+      settings.setProperty("sonar.auth.aad.directoryLocation", AadSettings.DIRECTORY_LOC_GLOBAL);
       settings.setProperty("sonar.auth.aad.enabled", true);
     } else {
       settings.setProperty("sonar.auth.aad.enabled", false);

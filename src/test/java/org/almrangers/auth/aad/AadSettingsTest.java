@@ -31,7 +31,7 @@ import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.Settings;
 import org.sonar.api.config.internal.MapSettings;
 
-import static org.almrangers.auth.aad.AadSettings.LOGIN_STRATEGY_DEFAULT_VALUE;
+import static org.almrangers.auth.aad.AadSettings.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AadSettingsTest {
@@ -63,6 +63,29 @@ public class AadSettingsTest {
   public void return_authorization_url_for_multi_tenant_azureAd_app() {
     settings.setProperty("sonar.auth.aad.multiTenant", "true");
     assertThat(underTest.authorizationUrl()).isEqualTo("https://login.microsoftonline.com/common/oauth2/authorize");
+  }
+
+  @Test
+  public void return_correct_urls() {
+    //Azure Default "Global"
+    settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_GLOBAL);
+    assertThat(underTest.authorizationUrl().startsWith("https://login.microsoftonline.com"));
+    assertThat(underTest.getGraphURL().startsWith("https://graph.microsoft.com"));
+
+    //Azure US Gov
+    settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_USGOV);
+    assertThat(underTest.authorizationUrl().startsWith("https://login.microsoftonline.us"));
+    assertThat(underTest.getGraphURL().startsWith("https://graph.microsoft.com"));
+
+    //Azure Germany
+    settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_DE);
+    assertThat(underTest.authorizationUrl().startsWith("https://login.microsoftonline.de"));
+    assertThat(underTest.getGraphURL().startsWith("https://graph.microsoft.de"));
+
+    //Azure China
+    settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_CN);
+    assertThat(underTest.authorizationUrl().startsWith("https://login.chinacloudapi.cn"));
+    assertThat(underTest.getGraphURL().startsWith("https://microsoftgraph.chinacloudapi.cn"));
   }
 
   @Test
@@ -113,7 +136,7 @@ public class AadSettingsTest {
 
   @Test
   public void definitions() {
-    assertThat(AadSettings.definitions()).hasSize(8);
+    assertThat(AadSettings.definitions()).hasSize(9);
   }
 
 }

@@ -55,15 +55,13 @@ import org.sonar.api.utils.log.Loggers;
 
 import static java.lang.String.format;
 import static org.almrangers.auth.aad.AadSettings.AUTH_REQUEST_FORMAT;
-import static org.almrangers.auth.aad.AadSettings.GROUPS_REQUEST_FORMAT;
 import static org.almrangers.auth.aad.AadSettings.LOGIN_STRATEGY_PROVIDER_ID;
 import static org.almrangers.auth.aad.AadSettings.LOGIN_STRATEGY_UNIQUE;
-import static org.almrangers.auth.aad.AadSettings.SECURE_RESOURCE_URL;
 
 @ServerSide
 public class AadIdentityProvider implements OAuth2IdentityProvider {
   private static final String KEY = "aad";
-  private static final String NAME = "Azure AD";
+  private static final String NAME = "Microsoft";
   private static final Logger LOGGER = Loggers.get(AadIdentityProvider.class);
 
   private final AadSettings settings;
@@ -75,8 +73,8 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
   @Override
   public Display getDisplay() {
     return Display.builder()
-      .setIconPath("/static/authaad/azure.svg")
-      .setBackgroundColor("#336699")
+      .setIconPath("/static/authaad/ms-symbol.svg")
+      .setBackgroundColor("#2F2F2F")
       .build();
   }
 
@@ -122,7 +120,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
       URI url = new URI(context.getCallbackUrl());
       ClientCredential clientCredt = new ClientCredential(settings.clientId(), settings.clientSecret());
       Future<AuthenticationResult> future = authContext.acquireTokenByAuthorizationCode(
-        oAuthVerifier, url, clientCredt, SECURE_RESOURCE_URL, null);
+        oAuthVerifier, url, clientCredt, settings.getGraphURL(), null);
       result = future.get();
 
       UserInfo aadUser = result.getUserInfo();
@@ -158,7 +156,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
   }
 
   URL getUrl(String userId, String nextPage) throws MalformedURLException {
-	  String url =  String.format(GROUPS_REQUEST_FORMAT, settings.tenantId(), userId);
+	  String url =  String.format(settings.getGraphMembershipUrl(), settings.tenantId(), userId);
 	  // Append odata query parameters for subsequent pages
 	if (null != nextPage) {
 		url += "&" + nextPage;
@@ -173,9 +171,8 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
       do {
     	  URL url = getUrl(userId, nextPage);
 	      HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-	      connection.setRequestProperty("api-version", "1.6");
 	      connection.setRequestProperty("Authorization", accessToken);
-	      connection.setRequestProperty("Accept", "application/json;odata=minimalmetadata");
+	      connection.setRequestProperty("Accept", "application/json;odata.metadata=minimal");
 	      String goodRespStr = HttpClientHelper.getResponseStringFromConn(connection, true);
 	      int responseCode = connection.getResponseCode();
 	      JSONObject response = HttpClientHelper.processGoodRespStr(responseCode, goodRespStr);

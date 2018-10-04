@@ -112,9 +112,9 @@ Installation and configurations
 
     1.  Click **Save Authentication Settings**.
 
-    1.  Sign out and go to the log in form. A new button named "**Log in with Azure AD**" allows users to sign in with their Azure AD account.
+	1.  Sign out and go to the log in form. A new button named "**Log in with Microsoft**" allows users to sign in with their Azure AD account. For login with username and password, clicking "More options" reveals the login form.
 
-    ![Login with Azure AD](./_img/loginwithAD.png)
+	![Login with Microsoft](./_img/loginwithAD.png)
 
 ### General Configurations
 
@@ -129,8 +129,9 @@ Installation and configurations
 | sonar.auth.aad.tenantId             | Tenant ID                      | Azure Active Directory Tenant Id. This value is optional if sonar.auth.aad.multiTenant set to True                                                                                                                                                                                                                                                                                              | None          |
 | sonar.auth.aad.allowUsersToSignUp   | Allow users to sign-up         | Allow new users to authenticate. When set to 'false', only existing users will be able to authenticate to the server.                                                                                                                                                                                                                                                                           | true          |
 | sonar.auth.aad.loginStrategy        | Login generation strategy      | When the login strategy is set to '**Unique**', the user's login will be auto-generated the first time so that it is unique. When the login strategy is set to '**Same as Azure AD login**', the user's login will be the Azure AD login. This last strategy allows, when changing the authentication provider, to keep existing users if logins from a new provider are the same as Azure AD). | Unique        |
+| sonar.auth.aad.directoryLocation	|Directory Location | The location of the Azure installation. You normally won't need to change this. | Azure AD (Global)
 
-### Groups Syncronization
+### Groups Synchronization
 
 This feature was introduced in the 1.1-RC1 version of the plugin.
 
@@ -162,10 +163,10 @@ Troubleshooting
     1. Modify the "Maximum allowed content length" field to the desired maximum size in bytes
 
 * Some users having IIS as a reverse proxy with SSL certificate following the tutorial [Configure SSL for SonarQube on Windows](http://blog.jessehouwing.nl/2016/02/configure-ssl-for-sonarqube-on-windows.html) when try to login with Azure Active Directory the URL has as hostname the same as default domain.
-    To perform login without this issue:
-    1. Go to the windows server.
-    1. Open IIS Manager (Internet Information Services Manager).
-    1. Highlight the server in the "Connections" pane, and double-click on "Application Request Routing Cache"
-    1. In the "Actions" pane, click "Server Proxy Settings..."
-    1. Uncheck "Reverse rewrite host in response headers"
-Then, when you click on **Log in with Azure AD** in Login page, the redirection to login.microsoftonline.com correctly.
+	To perform login without this issue:
+	1. Go to the windows server.
+	1. Open IIS Manager (Internet Information Services Manager).
+	1. Highlight the server in the "Connections" pane, and double-click on "Application Request Routing Cache"
+	1. In the "Actions" pane, click "Server Proxy Settings..."
+	1. Uncheck "Reverse rewrite host in response headers"
+Then, when you click on **Log in with Microsoft** in Login page, the redirection to login.microsoftonline.com correctly.
