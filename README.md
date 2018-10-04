@@ -165,4 +165,4 @@ Troubleshooting
 	1. Highlight the server in the "Connections" pane, and double-click on "Application Request Routing Cache"
 	1. In the "Actions" pane, click "Server Proxy Settings..."
 	1. Uncheck "Reverse rewrite host in response headers"
-Then, when you click on **Log in with Azure AD** in Login page, the redirection to login.microsoftonline.com correctly.
+Then, when you click on **Log in with Microsoft** in Login page, the redirection to login.microsoftonline.com correctly.
