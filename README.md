@@ -126,7 +126,7 @@ Installation and configurations
 | sonar.auth.aad.allowUsersToSignUp   | Allow users to sign-up         | Allow new users to authenticate. When set to 'false', only existing users will be able to authenticate to the server.                                                                                                                                                                                                                                                                           | true          |
 | sonar.auth.aad.loginStrategy        | Login generation strategy      | When the login strategy is set to '**Unique**', the user's login will be auto-generated the first time so that it is unique. When the login strategy is set to '**Same as Azure AD login**', the user's login will be the Azure AD login. This last strategy allows, when changing the authentication provider, to keep existing users if logins from a new provider are the same as Azure AD). | Unique        |
 
-### Groups Syncronization
+### Groups Synchronization
 
 This feature was introduced in the 1.1-RC1 version of the plugin.
 
