@@ -125,6 +125,7 @@ Installation and configurations
 | sonar.auth.aad.tenantId             | Tenant ID                      | Azure Active Directory Tenant Id. This value is optional if sonar.auth.aad.multiTenant set to True                                                                                                                                                                                                                                                                                              | None          |
 | sonar.auth.aad.allowUsersToSignUp   | Allow users to sign-up         | Allow new users to authenticate. When set to 'false', only existing users will be able to authenticate to the server.                                                                                                                                                                                                                                                                           | true          |
 | sonar.auth.aad.loginStrategy        | Login generation strategy      | When the login strategy is set to '**Unique**', the user's login will be auto-generated the first time so that it is unique. When the login strategy is set to '**Same as Azure AD login**', the user's login will be the Azure AD login. This last strategy allows, when changing the authentication provider, to keep existing users if logins from a new provider are the same as Azure AD). | Unique        |
+| sonar.auth.aad.directoryLocation	|Directory Location | The location of the Azure installation. You normally won't need to change this. | Azure AD (Global)
 
 ### Groups Synchronization
 
@@ -164,4 +165,4 @@ Troubleshooting
 	1. Highlight the server in the "Connections" pane, and double-click on "Application Request Routing Cache"
 	1. In the "Actions" pane, click "Server Proxy Settings..."
 	1. Uncheck "Reverse rewrite host in response headers"
-Then, when you click on **Log in with Azure AD** in Login page, the redirection to login.microsoftonline.com correctly.
+Then, when you click on **Log in with Microsoft** in Login page, the redirection to login.microsoftonline.com correctly.
