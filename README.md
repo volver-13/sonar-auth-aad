@@ -1,6 +1,6 @@
 Azure Active Directory (AAD) Authentication Plug-in for SonarQube
 =================================================================
-[![Build Status](https://api.travis-ci.org/SonarQubeCommunity/sonar-auth-aad.svg)](https://travis-ci.org/SonarQubeCommunity/sonar-auth-aad)
+[![Build Status](https://travis-ci.org/hkamel/sonar-auth-aad.svg?branch=master)
 
 Description
 -----------
