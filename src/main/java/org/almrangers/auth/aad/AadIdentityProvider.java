@@ -62,8 +62,6 @@ import static org.almrangers.auth.aad.AadSettings.LOGIN_STRATEGY_UNIQUE;
 @ServerSide
 public class AadIdentityProvider implements OAuth2IdentityProvider {
 
-  public static final String NAME_FALLBACK = "Anonymous Azure AD User";
-
   private static final String KEY = "aad";
   private static final String NAME = "Microsoft";
   private static final String NAME_CLAIM = "name";
@@ -164,7 +162,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
       }
     }
     LOGGER.warn(String.format("User's name not found from authentication token for user %s", userInfo.getUniqueId()));
-    return NAME_FALLBACK;
+    return userInfo.getDisplayableId();
   }
 
   private String getLogin(UserInfo aadUser) {

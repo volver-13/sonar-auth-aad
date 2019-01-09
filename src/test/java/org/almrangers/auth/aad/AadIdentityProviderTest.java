@@ -52,6 +52,7 @@ public class AadIdentityProviderTest {
 
   private static final String GIVEN_NAME = "GivenName";
   private static final String FAMILY_NAME = "FamilyName";
+  private static final String DISPLAYABLE_ID = "DisplayableId";
   private static final String EXPECTED_NAME = GIVEN_NAME + " " + FAMILY_NAME;
   private static final String JSON_WITH_NAME = "{\"name\": \"" + EXPECTED_NAME + "\"}";
   private static final String EMPTY_JSON = "{}";
@@ -159,11 +160,12 @@ public class AadIdentityProviderTest {
     UserInfo mockUserInfo = mock(UserInfo.class);
     doReturn(null).when(mockUserInfo).getGivenName();
     doReturn(null).when(mockUserInfo).getFamilyName();
+    doReturn(DISPLAYABLE_ID).when(mockUserInfo).getDisplayableId();
     AuthenticationResult mockResult = mock(AuthenticationResult.class);
     doReturn(mockUserInfo).when(mockResult).getUserInfo();
     doReturn(getMockJWT(EMPTY_JSON, EMPTY_JSON, EMPTY_JSON)).when(mockResult).getIdToken();
 
-    assertEquals(AadIdentityProvider.NAME_FALLBACK, underTest.getUserName(mockResult));
+    assertEquals(DISPLAYABLE_ID, underTest.getUserName(mockResult));
   }
 
   @Test
@@ -171,11 +173,12 @@ public class AadIdentityProviderTest {
     UserInfo mockUserInfo = mock(UserInfo.class);
     doReturn(null).when(mockUserInfo).getGivenName();
     doReturn(null).when(mockUserInfo).getFamilyName();
+    doReturn(DISPLAYABLE_ID).when(mockUserInfo).getDisplayableId();
     AuthenticationResult mockResult = mock(AuthenticationResult.class);
     doReturn(mockUserInfo).when(mockResult).getUserInfo();
     doReturn(null).when(mockResult).getIdToken();
 
-    assertEquals(AadIdentityProvider.NAME_FALLBACK, underTest.getUserName(mockResult));
+    assertEquals(DISPLAYABLE_ID, underTest.getUserName(mockResult));
   }
 
   private String getMockJWT(String header, String payload, String signature) {
