@@ -35,6 +35,7 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
+import java.util.Base64;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
@@ -60,8 +61,11 @@ import static org.almrangers.auth.aad.AadSettings.LOGIN_STRATEGY_UNIQUE;
 
 @ServerSide
 public class AadIdentityProvider implements OAuth2IdentityProvider {
+
   private static final String KEY = "aad";
   private static final String NAME = "Microsoft";
+  private static final String NAME_CLAIM = "name";
+  private static final int JWT_PAYLOAD_PART_INDEX = 1;
   private static final Logger LOGGER = Loggers.get(AadIdentityProvider.class);
 
   private final AadSettings settings;
@@ -127,7 +131,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
       UserIdentity.Builder userIdentityBuilder = UserIdentity.builder()
         .setProviderLogin(aadUser.getDisplayableId())
         .setLogin(getLogin(aadUser))
-        .setName(aadUser.getGivenName() + " " + aadUser.getFamilyName())
+        .setName(getUserName(result))
         .setEmail(aadUser.getDisplayableId());
       if (settings.enableGroupSync()) {
         userGroups = getUserGroupsMembership(result.getAccessToken(), result.getUserInfo().getUniqueId());
@@ -142,6 +146,23 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
         service.shutdown();
       }
     }
+  }
+
+  String getUserName(AuthenticationResult result) {
+    UserInfo userInfo = result.getUserInfo();
+    if (userInfo.getGivenName() != null && userInfo.getFamilyName() != null) {
+      return userInfo.getGivenName() + " " + userInfo.getFamilyName();
+    }
+
+    if (result.getIdToken() != null) {
+      String base64EncodedJWTPayload = result.getIdToken().split("\\.")[JWT_PAYLOAD_PART_INDEX];
+      JSONObject token = new JSONObject(new String(Base64.getDecoder().decode(base64EncodedJWTPayload)));
+      if (token.has(NAME_CLAIM)) {
+        return token.getString(NAME_CLAIM);
+      }
+    }
+    LOGGER.warn(String.format("User's name not found from authentication token for user %s", userInfo.getUniqueId()));
+    return userInfo.getDisplayableId();
   }
 
   private String getLogin(UserInfo aadUser) {
