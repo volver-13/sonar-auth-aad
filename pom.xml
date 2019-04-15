@@ -1,15 +1,16 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.almrangers.auth.aad</groupId>
     <artifactId>sonar-auth-aad-plugin</artifactId>
     <version>1.1-RC2</version>
+    <packaging>sonar-plugin</packaging>
+
     <name>Azure Active Directory (AAD) Authentication Plug-in for SonarQube</name>
     <description>This plug-in enables Azure Active Directory (AAD) users to automatically be sign up (a login is created
-        if they don’t have one already) and authenticated on a SonarQube server.
-    </description>
+        if they don’t have one already) and authenticated on a SonarQube server.</description>
     <inceptionYear>2016</inceptionYear>
-    <packaging>sonar-plugin</packaging>
     <organization>
         <name>ALM | DevOps Rangers</name>
         <url>https://aka.ms/vsar</url>
@@ -21,19 +22,7 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
-    <issueManagement>
-        <system>GitHub Issues</system>
-        <url>https://github.com/SonarQubeCommunity/sonar-auth-aad/issues</url>
-    </issueManagement>
-    <scm>
-        <url>https://github.com/SonarQubeCommunity/sonar-auth-aad</url>
-        <tag>HEAD</tag>
-    </scm>
-    <properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
-    </properties>
+
     <developers>
         <developer>
             <id>hkamel</id>
@@ -41,6 +30,22 @@
             <organization>ALM | DevOps Rangers</organization>
         </developer>
     </developers>
+
+    <scm>
+        <url>https://github.com/hkamel/sonar-auth-aad</url>
+        <tag>HEAD</tag>
+    </scm>
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/hkamel/sonar-auth-aad/issues</url>
+    </issueManagement>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.sonarsource.sonarqube</groupId>
@@ -114,6 +119,7 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
+
     <build>
         <plugins>
             <plugin>
