@@ -36,31 +36,24 @@
     </developers>
     <contributors>
         <contributor>
-            <id>jeanp</id>
             <name>Jean-Marc Prieur</name>
         </contributor>
         <contributor>
-            <id>willys</id>
             <name>Willy-Peter Schaub</name>
         </contributor>
         <contributor>
-            <id>fmallet</id>
             <name>Freddy Mallet</name>
         </contributor>
         <contributor>
-            <id>julienlancelot</id>
             <name>Julien Lancelot</name>
         </contributor>
         <contributor>
-            <id>spradhan</id>
             <name>Sushant Pradhan</name>
         </contributor>
         <contributor>
-            <id>ehartmann</id>
             <name>Eric Hartmann</name>
         </contributor>
         <contributor>
-            <id>mmajis</id>
             <name>Mika Majakorpi</name>
         </contributor>
     </contributors>
