@@ -1,5 +1,5 @@
 # Azure Active Directory (AAD) Authentication Plug-in for SonarQube
-[![Build Status](https://travis-ci.org/hkamel/sonar-auth-aad.svg?branch=master)](https://travis-ci.org/hkamel/sonar-auth-aad)
+[![Build Status](https://travis-ci.org/hkamel/sonar-auth-aad.svg?branch=master)](https://travis-ci.org/hkamel/sonar-auth-aad) [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=org.almrangers.auth.aad%3Asonar-auth-aad-plugin&metric=alert_status)](https://sonarcloud.io/dashboard?id=org.almrangers.auth.aad%3Asonar-auth-aad-plugin)
 
 This plugin for SonarQube allows the use of Azure Active Directory (AAD)
 as an authentication option.
