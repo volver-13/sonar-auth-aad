@@ -28,14 +28,15 @@ package org.almrangers.auth.aad;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
+
+import org.sonar.api.config.Configuration;
 import org.sonar.api.config.PropertyDefinition;
-import org.sonar.api.config.Settings;
 import org.sonar.api.server.ServerSide;
 
 import static java.lang.String.format;
 import static java.lang.String.valueOf;
-import static org.sonar.api.PropertyType.BOOLEAN;
-import static org.sonar.api.PropertyType.SINGLE_SELECT_LIST;
+import static org.sonar.api.PropertyType.*;
 
 @ServerSide
 public class AadSettings {
@@ -75,10 +76,10 @@ public class AadSettings {
   protected static final String AUTH_REQUEST_FORMAT = "%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s&scope=openid";
   protected static final String GROUPS_REQUEST_FORMAT = "/v1.0/%s/users/%s/transitiveMemberOf";
 
-  private final Settings settings;
+  private final Configuration config;
 
-  public AadSettings(Settings settings) {
-    this.settings = settings;
+  public AadSettings(Configuration config) {
+    this.config = config;
   }
 
   public static List<PropertyDefinition> definitions() {
@@ -162,63 +163,66 @@ public class AadSettings {
         .defaultValue(valueOf(false))
         .index(9)
         .build()
-
     );
   }
 
-  public String clientId() {
-    return settings.getString(CLIENT_ID);
+  public Optional<String> clientId() {
+    return config.get(CLIENT_ID);
   }
 
   public boolean allowUsersToSignUp() {
-    return settings.getBoolean(ALLOW_USERS_TO_SIGN_UP);
+    return config.getBoolean(ALLOW_USERS_TO_SIGN_UP).orElse(Boolean.TRUE);
   }
 
   public boolean enableGroupSync() {
-    return settings.getBoolean(ENABLE_GROUPS_SYNC);
+    return config.getBoolean(ENABLE_GROUPS_SYNC).orElse(Boolean.FALSE);
   }
 
   public boolean multiTenant() {
-    return settings.getBoolean(MULTI_TENANT);
+    return config.getBoolean(MULTI_TENANT).orElse(Boolean.FALSE);
   }
 
-  public String tenantId() {
-    return settings.getString(TENANT_ID);
+  public Optional<String> tenantId() {
+    return config.get(TENANT_ID);
   }
 
-  public String clientSecret() {
-    return settings.getString(CLIENT_SECRET);
+  public Optional<String> clientSecret() {
+    return config.get(CLIENT_SECRET);
   }
 
   public boolean isEnabled() {
-    return settings.getBoolean(ENABLED) && clientId() != null && clientSecret() != null && loginStrategy() != null;
+    return config.getBoolean(ENABLED).orElse(Boolean.FALSE) && clientId().isPresent() && clientSecret().isPresent() && loginStrategy().isPresent();
   }
 
   private String getEndpoint() {
     if (multiTenant()) {
       return COMMON_URL;
     } else {
-      return tenantId();
+      return tenantId().orElse("null");
     }
   }
 
   private String getLoginHost() {
-    String directoryLocation = settings.getString(DIRECTORY_LOCATION);
+    Optional<String> directoryLocation = config.get(DIRECTORY_LOCATION);
 
-    switch (directoryLocation) {
-      case DIRECTORY_LOC_USGOV:
-        return LOGIN_URL_USGOV;
+    if(directoryLocation.isPresent()) {
+      switch (directoryLocation.get()) {
+        case DIRECTORY_LOC_USGOV:
+          return LOGIN_URL_USGOV;
 
-      case DIRECTORY_LOC_DE:
-        return LOGIN_URL_DE;
+        case DIRECTORY_LOC_DE:
+          return LOGIN_URL_DE;
 
-      case DIRECTORY_LOC_CN:
-        return LOGIN_URL_CN;
+        case DIRECTORY_LOC_CN:
+          return LOGIN_URL_CN;
 
-      case DIRECTORY_LOC_GLOBAL:
-      default:
-        return LOGIN_URL;
+        case DIRECTORY_LOC_GLOBAL:
+        default:
+          return LOGIN_URL;
+      }
     }
+
+    return LOGIN_URL;
   }
 
   public String authorizationUrl() {
@@ -230,29 +234,33 @@ public class AadSettings {
   }
 
   public String getGraphURL() {
-    String directoryLocation = settings.getString(DIRECTORY_LOCATION);
+    Optional<String> directoryLocation = config.get(DIRECTORY_LOCATION);
 
-    switch (directoryLocation) {
-      case DIRECTORY_LOC_USGOV:
-        return GRAPH_URL_USGOV;
+    if(directoryLocation.isPresent()) {
+      switch (directoryLocation.get()) {
+        case DIRECTORY_LOC_USGOV:
+          return GRAPH_URL_USGOV;
 
-      case DIRECTORY_LOC_DE:
-        return GRAPH_URL_DE;
+        case DIRECTORY_LOC_DE:
+          return GRAPH_URL_DE;
 
-      case DIRECTORY_LOC_CN:
-        return GRAPH_URL_CN;
+        case DIRECTORY_LOC_CN:
+          return GRAPH_URL_CN;
 
-      case DIRECTORY_LOC_GLOBAL:
-      default:
-        return GRAPH_URL;
+        case DIRECTORY_LOC_GLOBAL:
+        default:
+          return GRAPH_URL;
+      }
     }
+
+    return LOGIN_URL;
   }
 
   public String getGraphMembershipUrl() {
     return getGraphURL() + GROUPS_REQUEST_FORMAT;
   }
 
-  public String loginStrategy() {
-    return settings.getString(LOGIN_STRATEGY);
+  public Optional<String> loginStrategy() {
+    return config.get(LOGIN_STRATEGY);
   }
 }

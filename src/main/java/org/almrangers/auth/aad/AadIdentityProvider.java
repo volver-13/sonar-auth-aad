@@ -37,6 +37,7 @@ import java.net.URI;
 import java.net.URL;
 import java.util.Base64;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -105,7 +106,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
   @Override
   public void init(InitContext context) {
     String state = context.generateCsrfState();
-    String authUrl = String.format(AUTH_REQUEST_FORMAT, settings.authorizationUrl(), settings.clientId(), context.getCallbackUrl(), state);
+    String authUrl = String.format(AUTH_REQUEST_FORMAT, settings.authorizationUrl(), settings.clientId().orElse(null), context.getCallbackUrl(), state);
     context.redirectTo(authUrl);
   }
 
@@ -122,7 +123,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
       service = Executors.newFixedThreadPool(1);
       authContext = new AuthenticationContext(settings.authorityUrl(), false, service);
       URI url = new URI(context.getCallbackUrl());
-      ClientCredential clientCredt = new ClientCredential(settings.clientId(), settings.clientSecret());
+      ClientCredential clientCredt = new ClientCredential(settings.clientId().orElse(null), settings.clientSecret().orElse(null));
       Future<AuthenticationResult> future = authContext.acquireTokenByAuthorizationCode(
         oAuthVerifier, url, clientCredt, settings.getGraphURL(), null);
       result = future.get();
@@ -166,13 +167,17 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
   }
 
   private String getLogin(UserInfo aadUser) {
-    String loginStrategy = settings.loginStrategy();
-    if (LOGIN_STRATEGY_UNIQUE.equals(loginStrategy)) {
-      return generateUniqueLogin(aadUser);
-    } else if (LOGIN_STRATEGY_PROVIDER_ID.equals(loginStrategy)) {
-      return aadUser.getDisplayableId();
+    Optional<String> loginStrategy = settings.loginStrategy();
+    if(loginStrategy.isPresent()) {
+      if (LOGIN_STRATEGY_UNIQUE.equals(loginStrategy.get())) {
+        return generateUniqueLogin(aadUser);
+      } else if (LOGIN_STRATEGY_PROVIDER_ID.equals(loginStrategy.get())) {
+        return aadUser.getDisplayableId();
+      } else {
+        throw new UnauthorizedException(format("Login strategy not found : %s", loginStrategy));
+      }
     } else {
-      throw new UnauthorizedException(format("Login strategy not found : %s", loginStrategy));
+      throw new UnauthorizedException("Login strategy value is not set/present.");
     }
   }
 
