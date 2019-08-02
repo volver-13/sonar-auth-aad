@@ -42,6 +42,7 @@ import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import javax.annotation.Nullable;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
@@ -181,7 +182,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
     }
   }
 
-  URL getUrl(String userId, String nextPage) throws MalformedURLException {
+  URL getUrl(String userId, @Nullable String nextPage) throws MalformedURLException {
 	  String url =  String.format(settings.getGraphMembershipUrl(), settings.tenantId().orElse("common"), userId);
 	if (null != nextPage) {
 		url = nextPage;
