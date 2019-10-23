@@ -87,6 +87,12 @@ public class AadSettingsTest {
     assertThat(underTest.authorizationUrl().startsWith("https://login.chinacloudapi.cn"));
     assertThat(underTest.getGraphURL().startsWith("https://microsoftgraph.chinacloudapi.cn"));
   }
+  
+  @Test
+  public void return_graph_membership_url() {
+    settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_GLOBAL);
+    assertThat(underTest.getGraphMembershipUrl()).isEqualTo("https://graph.microsoft.com/v1.0/%s/users/%s/transitiveMemberOf");
+  }
 
   @Test
   public void is_enabled_always_return_false_when_client_id_is_null() {
