@@ -73,7 +73,7 @@ public class AadSettings {
   protected static final String GRAPH_URL_DE = "https://graph.microsoft.de";
   protected static final String GRAPH_URL_CN = "https://microsoftgraph.chinacloudapi.cn";
   protected static final String AUTH_REQUEST_FORMAT = "%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s&scope=openid";
-  protected static final String GROUPS_REQUEST_FORMAT = "/v1.0/%s/users/%s/memberOf";
+  protected static final String GROUPS_REQUEST_FORMAT = "/v1.0/%s/users/%s/transitiveMemberOf";
 
   private final Settings settings;
 
