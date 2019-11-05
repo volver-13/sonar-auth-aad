@@ -41,13 +41,13 @@ public class HttpClientHelper {
     } else {
       reader = new BufferedReader(new InputStreamReader(conn.getErrorStream()));
     }
-    StringBuffer stringBuffer = new StringBuffer();
+    StringBuilder stringBuilder = new StringBuilder();
     String line = "";
     while ((line = reader.readLine()) != null) {
-      stringBuffer.append(line);
+      stringBuilder.append(line);
     }
 
-    return stringBuffer.toString();
+    return stringBuilder.toString();
   }
 
   /**
@@ -58,7 +58,7 @@ public class HttpClientHelper {
    * @return
    * @throws JSONException
    */
-  public static JSONObject processGoodRespStr(int responseCode, String goodRespStr) throws JSONException {
+  public static JSONObject processGoodRespStr(int responseCode, String goodRespStr) {
     JSONObject response = new JSONObject();
     response.put("responseCode", responseCode);
     if (goodRespStr.equalsIgnoreCase("")) {
@@ -78,7 +78,7 @@ public class HttpClientHelper {
    * @return
    * @throws JSONException
    */
-  public static JSONObject processBadRespStr(int responseCode, String responseMsg) throws JSONException {
+  public static JSONObject processBadRespStr(int responseCode, String responseMsg) {
 
     JSONObject response = new JSONObject();
     response.put("responseCode", responseCode);

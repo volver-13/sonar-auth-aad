@@ -68,23 +68,23 @@ public class AadSettingsTest {
   public void return_correct_urls() {
     //Azure Default "Global"
     settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_GLOBAL);
-    assertThat(underTest.authorizationUrl().startsWith("https://login.microsoftonline.com"));
-    assertThat(underTest.getGraphURL().startsWith("https://graph.microsoft.com"));
+    assertThat(underTest.authorizationUrl()).startsWith("https://login.microsoftonline.com");
+    assertThat(underTest.getGraphURL()).startsWith("https://graph.microsoft.com");
 
     //Azure US Gov
     settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_USGOV);
-    assertThat(underTest.authorizationUrl().startsWith("https://login.microsoftonline.us"));
-    assertThat(underTest.getGraphURL().startsWith("https://graph.microsoft.com"));
+    assertThat(underTest.authorizationUrl()).startsWith("https://login.microsoftonline.us");
+    assertThat(underTest.getGraphURL()).startsWith("https://graph.microsoft.com");
 
     //Azure Germany
     settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_DE);
-    assertThat(underTest.authorizationUrl().startsWith("https://login.microsoftonline.de"));
-    assertThat(underTest.getGraphURL().startsWith("https://graph.microsoft.de"));
+    assertThat(underTest.authorizationUrl()).startsWith("https://login.microsoftonline.de");
+    assertThat(underTest.getGraphURL()).startsWith("https://graph.microsoft.de");
 
     //Azure China
     settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_CN);
-    assertThat(underTest.authorizationUrl().startsWith("https://login.chinacloudapi.cn"));
-    assertThat(underTest.getGraphURL().startsWith("https://microsoftgraph.chinacloudapi.cn"));
+    assertThat(underTest.authorizationUrl()).startsWith("https://login.chinacloudapi.cn");
+    assertThat(underTest.getGraphURL()).startsWith("https://microsoftgraph.chinacloudapi.cn");
   }
   
   @Test
