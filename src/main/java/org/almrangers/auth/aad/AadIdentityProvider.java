@@ -182,7 +182,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
   }
 
   URL getUrl(String userId, String nextPage) throws MalformedURLException {
-	  String url =  String.format(settings.getGraphMembershipUrl(), settings.tenantId(), userId);
+	  String url =  String.format(settings.getGraphMembershipUrl(), settings.tenantId().orElse("common"), userId);
 	if (null != nextPage) {
 		url = nextPage;
 	}
