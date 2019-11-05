@@ -27,15 +27,26 @@
 package org.almrangers.auth.aad;
 
 import org.junit.Test;
+import org.sonar.api.Plugin;
+import org.sonar.api.SonarQubeSide;
+import org.sonar.api.SonarRuntime;
+import org.sonar.api.internal.SonarRuntimeImpl;
+import org.sonar.api.utils.Version;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AuthAadPluginTest {
-  AuthAadPlugin underTest = new AuthAadPlugin();
+  Plugin.Context context;
 
   @Test
   public void test_extensions() {
-    assertThat(underTest.getExtensions()).hasSize(11);
+    assertThat(this.context.getExtensions()).hasSize(11);
   }
 
+  public AuthAadPluginTest() {
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SERVER);
+    this.context = new Plugin.Context(runtime);
+    AuthAadPlugin underTest = new AuthAadPlugin();
+    underTest.define(context);
+  }
 }

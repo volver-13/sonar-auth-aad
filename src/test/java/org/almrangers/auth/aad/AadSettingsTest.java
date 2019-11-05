@@ -28,16 +28,15 @@ package org.almrangers.auth.aad;
 
 import org.junit.Test;
 import org.sonar.api.config.PropertyDefinitions;
-import org.sonar.api.config.Settings;
 import org.sonar.api.config.internal.MapSettings;
 
 import static org.almrangers.auth.aad.AadSettings.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AadSettingsTest {
-  Settings settings = new MapSettings(new PropertyDefinitions(AadSettings.definitions()));
+  MapSettings settings = new MapSettings(new PropertyDefinitions(AadSettings.definitions()));
 
-  AadSettings underTest = new AadSettings(settings);
+  AadSettings underTest = new AadSettings(settings.asConfig());
 
   @Test
   public void is_enabled() {
@@ -116,19 +115,19 @@ public class AadSettingsTest {
 
   @Test
   public void default_login_strategy_is_unique_login() {
-    assertThat(underTest.loginStrategy()).isEqualTo(AadSettings.LOGIN_STRATEGY_UNIQUE);
+    assertThat(underTest.loginStrategy().orElse(null)).isEqualTo(AadSettings.LOGIN_STRATEGY_UNIQUE);
   }
 
   @Test
   public void return_client_id() {
     settings.setProperty("sonar.auth.aad.clientId.secured", "id");
-    assertThat(underTest.clientId()).isEqualTo("id");
+    assertThat(underTest.clientId().orElse(null)).isEqualTo("id");
   }
 
   @Test
   public void return_client_secret() {
     settings.setProperty("sonar.auth.aad.clientSecret.secured", "secret");
-    assertThat(underTest.clientSecret()).isEqualTo("secret");
+    assertThat(underTest.clientSecret().orElse(null)).isEqualTo("secret");
   }
 
   @Test
@@ -144,5 +143,4 @@ public class AadSettingsTest {
   public void definitions() {
     assertThat(AadSettings.definitions()).hasSize(9);
   }
-
 }

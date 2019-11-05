@@ -44,7 +44,6 @@ import com.microsoft.aad.adal4j.UserInfo;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.sonar.api.config.Settings;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.server.authentication.OAuth2IdentityProvider;
 
@@ -59,8 +58,8 @@ public class AadIdentityProviderTest {
 
   @Rule
   public ExpectedException thrown = ExpectedException.none();
-  Settings settings = new MapSettings();
-  AadSettings aadSettings = new AadSettings(settings);
+  MapSettings settings = new MapSettings();
+  AadSettings aadSettings = new AadSettings(settings.asConfig());
   AadIdentityProvider underTest = spy(new AadIdentityProvider(aadSettings));
 
   @Test
