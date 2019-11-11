@@ -52,16 +52,18 @@ public class AadSettingsTest {
   }
 
   @Test
-  public void return_authorization_url_for_single_tenant_azureAd_app() {
+  public void return_authorization_authority_url_for_single_tenant_azureAd_app() {
     settings.setProperty("sonar.auth.aad.multiTenant", "false");
     settings.setProperty("sonar.auth.aad.tenantId", "tenantId");
     assertThat(underTest.authorizationUrl()).isEqualTo("https://login.microsoftonline.com/tenantId/oauth2/authorize");
+    assertThat(underTest.authorityUrl()).isEqualTo("https://login.microsoftonline.com/tenantId/oauth2/token");
   }
 
   @Test
-  public void return_authorization_url_for_multi_tenant_azureAd_app() {
+  public void return_authorization_authority_url_for_multi_tenant_azureAd_app() {
     settings.setProperty("sonar.auth.aad.multiTenant", "true");
     assertThat(underTest.authorizationUrl()).isEqualTo("https://login.microsoftonline.com/common/oauth2/authorize");
+    assertThat(underTest.authorityUrl()).isEqualTo("https://login.microsoftonline.com/common/oauth2/token");
   }
 
   @Test
@@ -128,6 +130,22 @@ public class AadSettingsTest {
   public void return_client_secret() {
     settings.setProperty("sonar.auth.aad.clientSecret.secured", "secret");
     assertThat(underTest.clientSecret().orElse(null)).isEqualTo("secret");
+  }
+
+  @Test
+  public void return_group_sync() {
+    settings.setProperty("sonar.auth.aad.enableGroupsSync", true);
+    assertThat(underTest.enableGroupSync()).isTrue();
+    settings.setProperty("sonar.auth.aad.enableGroupsSync", false);
+    assertThat(underTest.enableGroupSync()).isFalse();
+  }
+
+  @Test
+  public void return_authority_url() {
+    // Just do a quick test with the global location to verify the URL is built properly
+    settings.setProperty("sonar.auth.aad.directoryLocation", "Azure AD (Global)");
+    settings.setProperty("sonar.auth.aad.tenantId", "    123e4567-e89b-12d3-a456-426655440000");
+    assertThat(underTest.authorityUrl()).isEqualTo("https://login.microsoftonline.com/123e4567-e89b-12d3-a456-426655440000/oauth2/token");
   }
 
   @Test
