@@ -215,13 +215,10 @@ public class AadSettings {
 
         case DIRECTORY_LOC_CN:
           return LOGIN_URL_CN;
-
-        case DIRECTORY_LOC_GLOBAL:
-        default:
-          return LOGIN_URL;
       }
     }
 
+    //This is the default "global" URL and will be returned if none of the special locations are selected.
     return LOGIN_URL;
   }
 
@@ -246,14 +243,11 @@ public class AadSettings {
 
         case DIRECTORY_LOC_CN:
           return GRAPH_URL_CN;
-
-        case DIRECTORY_LOC_GLOBAL:
-        default:
-          return GRAPH_URL;
       }
     }
 
-    return LOGIN_URL;
+    //This is the default "global" URL and will be returned if none of the special locations are selected.
+    return GRAPH_URL;
   }
 
   public String getGraphMembershipUrl() {

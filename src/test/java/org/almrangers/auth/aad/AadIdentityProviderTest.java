@@ -36,6 +36,7 @@ import static org.mockito.Mockito.when;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Base64;
 
@@ -129,6 +130,26 @@ public class AadIdentityProviderTest {
 
     settings.setProperty("sonar.auth.aad.enabled", false);
     assertThat(underTest.isEnabled()).isFalse();
+  }
+
+  @Test
+  public void allow_signups() {
+    settings.setProperty("sonar.auth.aad.allowUsersToSignUp", true);
+    assertThat(underTest.allowsUsersToSignUp()).isTrue();
+
+    settings.setProperty("sonar.auth.aad.allowUsersToSignUp", false);
+    assertThat(underTest.allowsUsersToSignUp()).isFalse();
+  }
+
+  @Test
+  public void page_url() throws MalformedURLException {
+    URL testUrl;
+
+    testUrl = underTest.getUrl("123e4567-e89b-12d3-a456-426655440000", null);
+    assertEquals("https://graph.microsoft.com/v1.0/common/users/123e4567-e89b-12d3-a456-426655440000/transitiveMemberOf", testUrl.toString());
+
+    testUrl = underTest.getUrl("123e4567-e89b-12d3-a456-426655440000", "https://graph.microsoft.com/v1.0/536e97e9-0d29-43ec-b8d5-a505d3ee6a8f/users/abc.xyz@example.com/memberOf?$skiptoken=RANDOMTOKEN");
+    assertEquals("https://graph.microsoft.com/v1.0/536e97e9-0d29-43ec-b8d5-a505d3ee6a8f/users/abc.xyz@example.com/memberOf?$skiptoken=RANDOMTOKEN", testUrl.toString());
   }
 
   @Test
