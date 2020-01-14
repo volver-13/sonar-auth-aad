@@ -54,5 +54,9 @@ public class AadGroup {
   public void setDisplayName(String displayName) {
     this.displayName = displayName;
   }
-
+  
+  public boolean isValid() {
+    return displayName != null && !displayName.isEmpty();
+  }
+  
 }

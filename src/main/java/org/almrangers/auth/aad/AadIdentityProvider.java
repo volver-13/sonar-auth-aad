@@ -209,7 +209,9 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
 	        JSONObject thisUserJSONObject = groups.optJSONObject(i);
 	        group = new AadGroup();
 	        JSONHelper.convertJSONObjectToDirectoryObject(thisUserJSONObject, group);
-	        userGroups.add(group.getDisplayName());
+	        if (group.isValid()) {
+              userGroups.add(group.getDisplayName());
+	        }
 	      }
 	      nextPage = JSONHelper.fetchNextPageLink(response);
       } while (StringUtils.isNotEmpty(nextPage));
