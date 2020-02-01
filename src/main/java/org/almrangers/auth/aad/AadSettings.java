@@ -57,9 +57,9 @@ public class AadSettings {
   protected static final String LOGIN_STRATEGY_DEFAULT_VALUE = LOGIN_STRATEGY_UNIQUE;
   protected static final String MULTI_TENANT = "sonar.auth.aad.multiTenant";
 
-  protected static final String CATEGORY = "Azure Active Directory";
-  protected static final String SUBCATEGORY = "Authentication";
-  protected static final String GROUPSYNCSUBCATEGORY = "Groups Synchronization";
+  protected static final String CATEGORY = "aad";
+  protected static final String SUBCATEGORY = "authentication";
+  protected static final String GROUPSYNCSUBCATEGORY = "groupsync";
 
   protected static final String LOGIN_URL = "https://login.microsoftonline.com";
   protected static final String LOGIN_URL_USGOV = "https://login.microsoftonline.us";
@@ -85,8 +85,6 @@ public class AadSettings {
   public static List<PropertyDefinition> definitions() {
     return Arrays.asList(
       PropertyDefinition.builder(ENABLED)
-        .name("Enabled")
-        .description("Enable Azure AD users to login. Value is ignored if client ID and secret are not defined.")
         .category(CATEGORY)
         .subCategory(SUBCATEGORY)
         .type(BOOLEAN)
@@ -94,22 +92,16 @@ public class AadSettings {
         .index(1)
         .build(),
       PropertyDefinition.builder(CLIENT_ID)
-        .name("Client ID")
-        .description("Client ID provided by Azure AD when registering the application.")
         .category(CATEGORY)
         .subCategory(SUBCATEGORY)
         .index(2)
         .build(),
       PropertyDefinition.builder(CLIENT_SECRET)
-        .name("Client Secret")
-        .description("Client key provided by Azure AD when registering the application.")
         .category(CATEGORY)
         .subCategory(SUBCATEGORY)
         .index(3)
         .build(),
       PropertyDefinition.builder(MULTI_TENANT)
-        .name("Multi-tenant Azure Application")
-        .description("multi-tenant application")
         .category(CATEGORY)
         .subCategory(SUBCATEGORY)
         .type(BOOLEAN)
@@ -117,15 +109,11 @@ public class AadSettings {
         .index(4)
         .build(),
       PropertyDefinition.builder(TENANT_ID)
-        .name("Tenant ID")
-        .description("Azure AD Tenant ID.")
         .category(CATEGORY)
         .subCategory(SUBCATEGORY)
         .index(5)
         .build(),
       PropertyDefinition.builder(ALLOW_USERS_TO_SIGN_UP)
-        .name("Allow users to sign-up")
-        .description("Allow new users to authenticate. When set to 'false', only existing users will be able to authenticate to the server.")
         .category(CATEGORY)
         .subCategory(SUBCATEGORY)
         .type(BOOLEAN)
@@ -133,10 +121,6 @@ public class AadSettings {
         .index(6)
         .build(),
       PropertyDefinition.builder(LOGIN_STRATEGY)
-        .name("Login generation strategy")
-        .description(format("When the login strategy is set to '%s', the user's login will be auto-generated the first time so that it is unique. " +
-            "When the login strategy is set to '%s', the user's login will be the Azure AD login.",
-          LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID))
         .category(CATEGORY)
         .subCategory(SUBCATEGORY)
         .type(SINGLE_SELECT_LIST)
@@ -145,8 +129,6 @@ public class AadSettings {
         .index(7)
         .build(),
       PropertyDefinition.builder(DIRECTORY_LOCATION)
-        .name("Directory Location")
-        .description("The location of the Azure installation. You normally won't need to change this.")
         .category(CATEGORY)
         .subCategory(SUBCATEGORY)
         .type(SINGLE_SELECT_LIST)
@@ -155,8 +137,6 @@ public class AadSettings {
         .index(8)
         .build(),
       PropertyDefinition.builder(ENABLE_GROUPS_SYNC)
-        .name("Enable Groups Synchronization")
-        .description("Enable groups synchronization from Azure AD to SonarQube, For each Azure AD group user belongs to, the user will be associated to a group with the same name(if it exists) in SonarQube.")
         .category(CATEGORY)
         .subCategory(GROUPSYNCSUBCATEGORY)
         .type(BOOLEAN)
