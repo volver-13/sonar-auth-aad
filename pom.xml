@@ -4,7 +4,7 @@
 
     <groupId>org.almrangers.auth.aad</groupId>
     <artifactId>sonar-auth-aad-plugin</artifactId>
-    <version>1.2.0-rc2</version>
+    <version>1.2.0</version>
     <packaging>sonar-plugin</packaging>
 
     <name>Azure Active Directory (AAD) Authentication Plug-in for SonarQube</name>
