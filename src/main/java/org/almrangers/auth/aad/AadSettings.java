@@ -58,8 +58,9 @@ public class AadSettings {
   protected static final String MULTI_TENANT = "sonar.auth.aad.multiTenant";
 
   protected static final String CATEGORY = "aad";
-  protected static final String SUBCATEGORY = "authentication";
-  protected static final String GROUPSYNCSUBCATEGORY = "groupsync";
+  protected static final String SUBCATEGORY_GENERAL = "general";
+  protected static final String SUBCATEGORY_GROUPSYNC = "groupsync";
+  protected static final String SUBCATEGORY_ADVANCED = "advanced";
 
   protected static final String LOGIN_URL = "https://login.microsoftonline.com";
   protected static final String LOGIN_URL_USGOV = "https://login.microsoftonline.us";
@@ -86,62 +87,64 @@ public class AadSettings {
     return Arrays.asList(
       PropertyDefinition.builder(ENABLED)
         .category(CATEGORY)
-        .subCategory(SUBCATEGORY)
+        .subCategory(SUBCATEGORY_GENERAL)
         .type(BOOLEAN)
         .defaultValue(valueOf(false))
         .index(1)
         .build(),
       PropertyDefinition.builder(CLIENT_ID)
         .category(CATEGORY)
-        .subCategory(SUBCATEGORY)
+        .subCategory(SUBCATEGORY_GENERAL)
         .index(2)
         .build(),
       PropertyDefinition.builder(CLIENT_SECRET)
         .category(CATEGORY)
-        .subCategory(SUBCATEGORY)
+        .subCategory(SUBCATEGORY_GENERAL)
         .index(3)
-        .build(),
-      PropertyDefinition.builder(MULTI_TENANT)
-        .category(CATEGORY)
-        .subCategory(SUBCATEGORY)
-        .type(BOOLEAN)
-        .defaultValue(valueOf(false))
-        .index(4)
         .build(),
       PropertyDefinition.builder(TENANT_ID)
         .category(CATEGORY)
-        .subCategory(SUBCATEGORY)
-        .index(5)
+        .subCategory(SUBCATEGORY_GENERAL)
+        .index(4)
         .build(),
       PropertyDefinition.builder(ALLOW_USERS_TO_SIGN_UP)
         .category(CATEGORY)
-        .subCategory(SUBCATEGORY)
+        .subCategory(SUBCATEGORY_GENERAL)
         .type(BOOLEAN)
         .defaultValue(valueOf(true))
-        .index(6)
+        .index(5)
+        .build(),
+      /* GROUP SYNC PROPERTIES */
+      PropertyDefinition.builder(ENABLE_GROUPS_SYNC)
+        .category(CATEGORY)
+        .subCategory(SUBCATEGORY_GROUPSYNC)
+        .type(BOOLEAN)
+        .defaultValue(valueOf(false))
+        .index(1)
+        .build(),
+      /* ADVANCED PROPERTIES */
+      PropertyDefinition.builder(MULTI_TENANT)
+        .category(CATEGORY)
+        .subCategory(SUBCATEGORY_ADVANCED)
+        .type(BOOLEAN)
+        .defaultValue(valueOf(false))
+        .index(1)
         .build(),
       PropertyDefinition.builder(LOGIN_STRATEGY)
         .category(CATEGORY)
-        .subCategory(SUBCATEGORY)
+        .subCategory(SUBCATEGORY_ADVANCED)
         .type(SINGLE_SELECT_LIST)
         .defaultValue(LOGIN_STRATEGY_DEFAULT_VALUE)
         .options(LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID)
-        .index(7)
+        .index(2)
         .build(),
       PropertyDefinition.builder(DIRECTORY_LOCATION)
         .category(CATEGORY)
-        .subCategory(SUBCATEGORY)
+        .subCategory(SUBCATEGORY_ADVANCED)
         .type(SINGLE_SELECT_LIST)
         .defaultValue(DIRECTORY_LOC_GLOBAL)
         .options(DIRECTORY_LOC_GLOBAL, DIRECTORY_LOC_USGOV, DIRECTORY_LOC_DE, DIRECTORY_LOC_CN)
-        .index(8)
-        .build(),
-      PropertyDefinition.builder(ENABLE_GROUPS_SYNC)
-        .category(CATEGORY)
-        .subCategory(GROUPSYNCSUBCATEGORY)
-        .type(BOOLEAN)
-        .defaultValue(valueOf(false))
-        .index(9)
+        .index(3)
         .build()
     );
   }
