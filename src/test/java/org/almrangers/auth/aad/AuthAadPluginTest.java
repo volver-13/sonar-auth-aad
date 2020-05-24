@@ -28,6 +28,7 @@ package org.almrangers.auth.aad;
 
 import org.junit.Test;
 import org.sonar.api.Plugin;
+import org.sonar.api.SonarEdition;
 import org.sonar.api.SonarQubeSide;
 import org.sonar.api.SonarRuntime;
 import org.sonar.api.internal.SonarRuntimeImpl;
@@ -44,7 +45,7 @@ public class AuthAadPluginTest {
   }
 
   public AuthAadPluginTest() {
-    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(6, 7), SonarQubeSide.SERVER);
+    SonarRuntime runtime = SonarRuntimeImpl.forSonarQube(Version.create(7, 9, 0), SonarQubeSide.SERVER, SonarEdition.COMMUNITY);
     this.context = new Plugin.Context(runtime);
     AuthAadPlugin underTest = new AuthAadPlugin();
     underTest.define(context);
