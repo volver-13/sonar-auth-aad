@@ -139,6 +139,14 @@ public class AadSettingsTest {
     settings.setProperty("sonar.auth.aad.enableGroupsSync", false);
     assertThat(underTest.enableGroupSync()).isFalse();
   }
+  
+  @Test
+  public void return_client_cred() {
+    settings.setProperty("sonar.auth.aad.enableClientCredential", true);
+    assertThat(underTest.enableClientCredential()).isTrue();
+    settings.setProperty("sonar.auth.aad.enableClientCredential", false);
+    assertThat(underTest.enableClientCredential()).isFalse();
+  }
 
   @Test
   public void return_authority_url() {
@@ -159,6 +167,6 @@ public class AadSettingsTest {
 
   @Test
   public void definitions() {
-    assertThat(AadSettings.definitions()).hasSize(9);
+    assertThat(AadSettings.definitions()).hasSize(10);
   }
 }
