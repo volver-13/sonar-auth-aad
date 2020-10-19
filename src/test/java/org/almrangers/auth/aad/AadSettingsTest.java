@@ -139,11 +139,23 @@ public class AadSettingsTest {
     settings.setProperty("sonar.auth.aad.enableGroupsSync", false);
     assertThat(underTest.enableGroupSync()).isFalse();
   }
-  
+
   @Test
-  public void return_client_cred() {
+  public void return_client_cred_when_multiTenant_is_false() {
+    settings.setProperty("sonar.auth.aad.multiTenant", "false");
+
     settings.setProperty("sonar.auth.aad.enableClientCredential", true);
     assertThat(underTest.enableClientCredential()).isTrue();
+    settings.setProperty("sonar.auth.aad.enableClientCredential", false);
+    assertThat(underTest.enableClientCredential()).isFalse();
+  }
+
+  @Test
+  public void client_cred_always_return_false_when_multiTenant_is_true() {
+    settings.setProperty("sonar.auth.aad.multiTenant", "true");
+
+    settings.setProperty("sonar.auth.aad.enableClientCredential", true);
+    assertThat(underTest.enableClientCredential()).isFalse();
     settings.setProperty("sonar.auth.aad.enableClientCredential", false);
     assertThat(underTest.enableClientCredential()).isFalse();
   }

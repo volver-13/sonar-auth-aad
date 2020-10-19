@@ -166,7 +166,8 @@ public class AadSettings {
         .build(),
       PropertyDefinition.builder(ENABLE_CLIENT_CRED)
         .name("Enable Client Credential Flow")
-        .description("Enable client credentials to be used to synchronize groups. This will use the client id and client secret to connect to Microsoft Graph. Should only be used with 'Application' permissions.")
+        .description("Enable client credentials to be used to synchronize groups. This will use the client id and client secret to connect to Microsoft Graph. "
+        		+ "Should only be used with 'Application' permissions. Requires multi-tenant to be 'false'.")
         .category(CATEGORY)
         .subCategory(GROUPSYNCSUBCATEGORY)
         .type(BOOLEAN)
@@ -189,7 +190,7 @@ public class AadSettings {
   }
 
   public boolean enableClientCredential() {
-    return config.getBoolean(ENABLE_CLIENT_CRED).orElse(Boolean.FALSE);
+    return config.getBoolean(ENABLE_CLIENT_CRED).orElse(Boolean.FALSE) && !multiTenant();
   }
 
   public boolean multiTenant() {
