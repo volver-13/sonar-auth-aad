@@ -166,7 +166,7 @@ public class AadSettings {
         .build(),
       PropertyDefinition.builder(ENABLE_CLIENT_CRED)
         .name("Enable Client Credential Flow")
-        .description("Needs a description")
+        .description("Enable client credentials to be used to synchronize groups. This will use the client id and client secret to connect to Microsoft Graph. Should only be used with 'Application' permissions.")
         .category(CATEGORY)
         .subCategory(GROUPSYNCSUBCATEGORY)
         .type(BOOLEAN)
