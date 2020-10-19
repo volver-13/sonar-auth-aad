@@ -207,7 +207,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
 	      int responseCode = connection.getResponseCode();
 	      JSONObject response = HttpClientHelper.processGoodRespStr(responseCode, goodRespStr);
 	      JSONArray groups;
-	      groups = JSONHelper.fetchDirectoryObjectJSONArray(response);
+	      groups = JSONHelper.fetchDirectoryObjectJSONArray(response);      
 	      AadGroup group;
 	      for (int i = 0; i < groups.length(); i++) {
 	        JSONObject thisUserJSONObject = groups.optJSONObject(i);
@@ -224,7 +224,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
     }
     return userGroups;
   }
-
+  
   private String generateUniqueLogin(UserInfo aadUser) {
     return String.format("%s@%s", aadUser.getDisplayableId(), getKey());
   }
