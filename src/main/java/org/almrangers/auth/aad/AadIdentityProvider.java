@@ -136,10 +136,10 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
         .setName(getUserName(result))
         .setEmail(aadUser.getDisplayableId());
       if (settings.enableGroupSync()) {
-    	if (settings.enableClientCredential()) {
-    		Future<AuthenticationResult> clientFuture = authContext.acquireToken(settings.getGraphURL(), clientCredt, null);
-    		result = clientFuture.get();
-    	}
+        if (settings.enableClientCredential()) {
+          Future<AuthenticationResult> clientFuture = authContext.acquireToken(settings.getGraphURL(), clientCredt, null);
+          result = clientFuture.get();
+        }
         userGroups = getUserGroupsMembership(result.getAccessToken(), aadUser.getUniqueId());
         userIdentityBuilder.setGroups(userGroups);
       }
@@ -207,7 +207,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
 	      int responseCode = connection.getResponseCode();
 	      JSONObject response = HttpClientHelper.processGoodRespStr(responseCode, goodRespStr);
 	      JSONArray groups;
-	      groups = JSONHelper.fetchDirectoryObjectJSONArray(response);      
+	      groups = JSONHelper.fetchDirectoryObjectJSONArray(response);
 	      AadGroup group;
 	      for (int i = 0; i < groups.length(); i++) {
 	        JSONObject thisUserJSONObject = groups.optJSONObject(i);
@@ -224,7 +224,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
     }
     return userGroups;
   }
-  
+
   private String generateUniqueLogin(UserInfo aadUser) {
     return String.format("%s@%s", aadUser.getDisplayableId(), getKey());
   }

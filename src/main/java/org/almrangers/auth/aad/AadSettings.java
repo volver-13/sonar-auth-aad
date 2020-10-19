@@ -187,10 +187,10 @@ public class AadSettings {
   public boolean enableGroupSync() {
     return config.getBoolean(ENABLE_GROUPS_SYNC).orElse(Boolean.FALSE);
   }
-  
+
   public boolean enableClientCredential() {
-	    return config.getBoolean(ENABLE_CLIENT_CRED).orElse(Boolean.FALSE);
-	  }
+	  return config.getBoolean(ENABLE_CLIENT_CRED).orElse(Boolean.FALSE);
+	}
 
   public boolean multiTenant() {
     return config.getBoolean(MULTI_TENANT).orElse(Boolean.FALSE);
