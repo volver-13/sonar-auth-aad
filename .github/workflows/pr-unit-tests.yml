@@ -1,10 +1,10 @@
-name: Test and Package
+name: Unit Tests
 
 on:
-  push:
+  pull_request:
 
 jobs:
-  build:
+  test:
     runs-on: ubuntu-latest
 
     steps:
@@ -13,13 +13,8 @@ jobs:
         uses: actions/setup-java@v1
         with:
           java-version: 1.8
-      - name: Build and Test with Maven
-        run: mvn --batch-mode --update-snapshots package
-      - name: Upload Packaged JAR
-        uses: actions/upload-artifact@v2
-        with:
-          name: plugin-binary
-          path: target/*.jar
+      - name: Unit Tests
+        run: mvn --batch-mode --update-snapshots verify
       - name: Upload Code Coverage Report
         uses: actions/upload-artifact@v2
         with:
