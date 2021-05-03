@@ -141,6 +141,26 @@ public class AadSettingsTest {
   }
 
   @Test
+  public void return_client_cred_when_multiTenant_is_false() {
+    settings.setProperty("sonar.auth.aad.multiTenant", "false");
+
+    settings.setProperty("sonar.auth.aad.enableClientCredential", true);
+    assertThat(underTest.enableClientCredential()).isTrue();
+    settings.setProperty("sonar.auth.aad.enableClientCredential", false);
+    assertThat(underTest.enableClientCredential()).isFalse();
+  }
+
+  @Test
+  public void client_cred_always_return_false_when_multiTenant_is_true() {
+    settings.setProperty("sonar.auth.aad.multiTenant", "true");
+
+    settings.setProperty("sonar.auth.aad.enableClientCredential", true);
+    assertThat(underTest.enableClientCredential()).isFalse();
+    settings.setProperty("sonar.auth.aad.enableClientCredential", false);
+    assertThat(underTest.enableClientCredential()).isFalse();
+  }
+
+  @Test
   public void return_authority_url() {
     // Just do a quick test with the global location to verify the URL is built properly
     settings.setProperty("sonar.auth.aad.directoryLocation", "Azure AD (Global)");
@@ -159,6 +179,6 @@ public class AadSettingsTest {
 
   @Test
   public void definitions() {
-    assertThat(AadSettings.definitions()).hasSize(9);
+    assertThat(AadSettings.definitions()).hasSize(10);
   }
 }

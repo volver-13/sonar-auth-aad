@@ -51,6 +51,7 @@ public class AadSettings {
   protected static final String DIRECTORY_LOC_DE = "Azure AD for Germany";
   protected static final String DIRECTORY_LOC_CN = "Azure AD China";
   protected static final String ENABLE_GROUPS_SYNC = "sonar.auth.aad.enableGroupsSync";
+  protected static final String ENABLE_CLIENT_CRED = "sonar.auth.aad.enableClientCredential";
   protected static final String LOGIN_STRATEGY = "sonar.auth.aad.loginStrategy";
   protected static final String LOGIN_STRATEGY_UNIQUE = "Unique";
   protected static final String LOGIN_STRATEGY_PROVIDER_ID = "Same as Azure AD login";
@@ -162,6 +163,16 @@ public class AadSettings {
         .type(BOOLEAN)
         .defaultValue(valueOf(false))
         .index(9)
+        .build(),
+      PropertyDefinition.builder(ENABLE_CLIENT_CRED)
+        .name("Enable Client Credential Flow")
+        .description("Enable client credentials to be used to synchronize groups. This will use the client id and client secret to connect to Microsoft Graph. "
+        		+ "Should only be used with 'Application' permissions. Requires multi-tenant to be 'false'.")
+        .category(CATEGORY)
+        .subCategory(GROUPSYNCSUBCATEGORY)
+        .type(BOOLEAN)
+        .defaultValue(valueOf(false))
+        .index(10)
         .build()
     );
   }
@@ -176,6 +187,10 @@ public class AadSettings {
 
   public boolean enableGroupSync() {
     return config.getBoolean(ENABLE_GROUPS_SYNC).orElse(Boolean.FALSE);
+  }
+
+  public boolean enableClientCredential() {
+    return config.getBoolean(ENABLE_CLIENT_CRED).orElse(Boolean.FALSE) && !multiTenant();
   }
 
   public boolean multiTenant() {

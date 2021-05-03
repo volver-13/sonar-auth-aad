@@ -136,7 +136,11 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
         .setName(getUserName(result))
         .setEmail(aadUser.getDisplayableId());
       if (settings.enableGroupSync()) {
-        userGroups = getUserGroupsMembership(result.getAccessToken(), result.getUserInfo().getUniqueId());
+        if (settings.enableClientCredential()) {
+          Future<AuthenticationResult> clientFuture = authContext.acquireToken(settings.getGraphURL(), clientCredt, null);
+          result = clientFuture.get();
+        }
+        userGroups = getUserGroupsMembership(result.getAccessToken(), aadUser.getUniqueId());
         userIdentityBuilder.setGroups(userGroups);
       }
       context.authenticate(userIdentityBuilder.build());
