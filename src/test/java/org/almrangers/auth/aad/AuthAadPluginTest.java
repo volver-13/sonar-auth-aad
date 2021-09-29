@@ -41,7 +41,7 @@ public class AuthAadPluginTest {
 
   @Test
   public void test_extensions() {
-    assertThat(this.context.getExtensions()).hasSize(11);
+    assertThat(this.context.getExtensions()).hasSize(12);
   }
 
   public AuthAadPluginTest() {
