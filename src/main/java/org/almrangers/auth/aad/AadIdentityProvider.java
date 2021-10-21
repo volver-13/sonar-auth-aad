@@ -113,6 +113,15 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
 
   @Override
   public void callback(CallbackContext context) {
+    try {
+      onCallback(context);
+    } catch (Exception e) {
+      LOGGER.error("Exception:" + e.toString());
+      throw new IllegalStateException(e);
+    }
+  }
+
+  private void onCallback(CallbackContext context) {
     context.verifyCsrfState();
     HttpServletRequest request = context.getRequest();
     String oAuthVerifier = request.getParameter("code");
@@ -120,6 +129,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
     AuthenticationResult result;
     ExecutorService service = null;
     Set<String> userGroups;
+
     try {
       service = Executors.newFixedThreadPool(1);
       authContext = new AuthenticationContext(settings.authorityUrl(), false, service);
@@ -143,6 +153,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
         userGroups = getUserGroupsMembership(result.getAccessToken(), aadUser.getUniqueId());
         userIdentityBuilder.setGroups(userGroups);
       }
+
       context.authenticate(userIdentityBuilder.build());
       context.redirectToRequestedPage();
     } catch (Exception e) {
@@ -207,7 +218,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
 	      int responseCode = connection.getResponseCode();
 	      JSONObject response = HttpClientHelper.processGoodRespStr(responseCode, goodRespStr);
 	      JSONArray groups;
-	      groups = JSONHelper.fetchDirectoryObjectJSONArray(response);      
+	      groups = JSONHelper.fetchDirectoryObjectJSONArray(response);
 	      AadGroup group;
 	      for (int i = 0; i < groups.length(); i++) {
 	        JSONObject thisUserJSONObject = groups.optJSONObject(i);
@@ -224,7 +235,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
     }
     return userGroups;
   }
-  
+
   private String generateUniqueLogin(UserInfo aadUser) {
     return String.format("%s@%s", aadUser.getDisplayableId(), getKey());
   }
