@@ -113,20 +113,31 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
 
   @Override
   public void callback(CallbackContext context) {
+    try {
+      onCallback(context);
+    } catch (Exception e) {
+      LOGGER.error("Exception:" + e.toString());
+      throw new IllegalStateException(e);
+    }
+  }
+
+  private void onCallback(CallbackContext context) {
     context.verifyCsrfState();
+
     HttpServletRequest request = context.getRequest();
-    String oAuthVerifier = request.getParameter("code");
+    String code = request.getParameter("code");
     AuthenticationContext authContext;
     AuthenticationResult result;
     ExecutorService service = null;
     Set<String> userGroups;
+
     try {
       service = Executors.newFixedThreadPool(1);
       authContext = new AuthenticationContext(settings.authorityUrl(), false, service);
       URI url = new URI(context.getCallbackUrl());
-      ClientCredential clientCredt = new ClientCredential(settings.clientId().orElse(null), settings.clientSecret().orElse(null));
+      ClientCredential clientCred = new ClientCredential(settings.clientId().orElse(null), settings.clientSecret().orElse(null));
       Future<AuthenticationResult> future = authContext.acquireTokenByAuthorizationCode(
-        oAuthVerifier, url, clientCredt, settings.getGraphURL(), null);
+        code, url, clientCred, settings.getGraphURL(), null);
       result = future.get();
 
       UserInfo aadUser = result.getUserInfo();
@@ -137,12 +148,13 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
         .setEmail(aadUser.getDisplayableId());
       if (settings.enableGroupSync()) {
         if (settings.enableClientCredential()) {
-          Future<AuthenticationResult> clientFuture = authContext.acquireToken(settings.getGraphURL(), clientCredt, null);
+          Future<AuthenticationResult> clientFuture = authContext.acquireToken(settings.getGraphURL(), clientCred, null);
           result = clientFuture.get();
         }
         userGroups = getUserGroupsMembership(result.getAccessToken(), aadUser.getUniqueId());
         userIdentityBuilder.setGroups(userGroups);
       }
+
       context.authenticate(userIdentityBuilder.build());
       context.redirectToRequestedPage();
     } catch (Exception e) {
@@ -207,7 +219,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
 	      int responseCode = connection.getResponseCode();
 	      JSONObject response = HttpClientHelper.processGoodRespStr(responseCode, goodRespStr);
 	      JSONArray groups;
-	      groups = JSONHelper.fetchDirectoryObjectJSONArray(response);      
+	      groups = JSONHelper.fetchDirectoryObjectJSONArray(response);
 	      AadGroup group;
 	      for (int i = 0; i < groups.length(); i++) {
 	        JSONObject thisUserJSONObject = groups.optJSONObject(i);
@@ -224,7 +236,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
     }
     return userGroups;
   }
-  
+
   private String generateUniqueLogin(UserInfo aadUser) {
     return String.format("%s@%s", aadUser.getDisplayableId(), getKey());
   }
