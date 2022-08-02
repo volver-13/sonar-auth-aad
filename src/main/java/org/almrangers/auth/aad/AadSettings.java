@@ -198,11 +198,9 @@ public class AadSettings {
     Optional<String> directoryLocation = config.get(DIRECTORY_LOCATION);
 
     if(directoryLocation.isPresent()) {
-      switch (directoryLocation.get()) {
-        case DIRECTORY_LOC_USGOV:
-          return LOGIN_URL_USGOV;
-
-        case DIRECTORY_LOC_CN:
+      if (directoryLocation.get().equals(DIRECTORY_LOC_USGOV)) {
+        return LOGIN_URL_USGOV;
+      } else if (directoryLocation.get().equals(DIRECTORY_LOC_CN)) {
           return LOGIN_URL_CN;
       }
     }
@@ -223,12 +221,10 @@ public class AadSettings {
     Optional<String> directoryLocation = config.get(DIRECTORY_LOCATION);
 
     if(directoryLocation.isPresent()) {
-      switch (directoryLocation.get()) {
-        case DIRECTORY_LOC_USGOV:
-          return GRAPH_URL_USGOV;
-
-        case DIRECTORY_LOC_CN:
-          return GRAPH_URL_CN;
+      if (directoryLocation.get().equals(DIRECTORY_LOC_USGOV)) {
+        return GRAPH_URL_USGOV;
+      } else if (directoryLocation.get().equals(DIRECTORY_LOC_CN)) {
+        return GRAPH_URL_CN;
       }
     }
 
