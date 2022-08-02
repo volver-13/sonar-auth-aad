@@ -78,17 +78,12 @@ public class AadSettingsTest {
     assertThat(underTest.authorizationUrl()).startsWith("https://login.microsoftonline.us");
     assertThat(underTest.getGraphURL()).startsWith("https://graph.microsoft.com");
 
-    //Azure Germany
-    settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_DE);
-    assertThat(underTest.authorizationUrl()).startsWith("https://login.microsoftonline.de");
-    assertThat(underTest.getGraphURL()).startsWith("https://graph.microsoft.de");
-
     //Azure China
     settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_CN);
     assertThat(underTest.authorizationUrl()).startsWith("https://login.chinacloudapi.cn");
     assertThat(underTest.getGraphURL()).startsWith("https://microsoftgraph.chinacloudapi.cn");
   }
-  
+
   @Test
   public void return_graph_membership_url() {
     settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_GLOBAL);
