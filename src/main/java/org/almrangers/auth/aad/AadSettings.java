@@ -48,7 +48,6 @@ public class AadSettings {
   protected static final String DIRECTORY_LOCATION = "sonar.auth.aad.directoryLocation";
   protected static final String DIRECTORY_LOC_GLOBAL = "Azure AD (Global)";
   protected static final String DIRECTORY_LOC_USGOV = "Azure AD for US Government";
-  protected static final String DIRECTORY_LOC_DE = "Azure AD for Germany";
   protected static final String DIRECTORY_LOC_CN = "Azure AD China";
   protected static final String ENABLE_GROUPS_SYNC = "sonar.auth.aad.enableGroupsSync";
   protected static final String ENABLE_CLIENT_CRED = "sonar.auth.aad.enableClientCredential";
@@ -65,7 +64,6 @@ public class AadSettings {
 
   protected static final String LOGIN_URL = "https://login.microsoftonline.com";
   protected static final String LOGIN_URL_USGOV = "https://login.microsoftonline.us";
-  protected static final String LOGIN_URL_DE = "https://login.microsoftonline.de";
   protected static final String LOGIN_URL_CN = "https://login.chinacloudapi.cn";
   protected static final String AUTHORIZATION_URL = "oauth2/authorize";
   protected static final String AUTHORITY_URL = "oauth2/token";
@@ -73,7 +71,6 @@ public class AadSettings {
 
   protected static final String GRAPH_URL = "https://graph.microsoft.com";
   protected static final String GRAPH_URL_USGOV = "https://graph.microsoft.com";
-  protected static final String GRAPH_URL_DE = "https://graph.microsoft.de";
   protected static final String GRAPH_URL_CN = "https://microsoftgraph.chinacloudapi.cn";
   protected static final String AUTH_REQUEST_FORMAT = "%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s&scope=openid";
   protected static final String GROUPS_REQUEST_FORMAT = "/v1.0/%s/users/%s/transitiveMemberOf";
@@ -144,7 +141,7 @@ public class AadSettings {
         .subCategory(SUBCATEGORY_ADVANCED)
         .type(SINGLE_SELECT_LIST)
         .defaultValue(DIRECTORY_LOC_GLOBAL)
-        .options(DIRECTORY_LOC_GLOBAL, DIRECTORY_LOC_USGOV, DIRECTORY_LOC_DE, DIRECTORY_LOC_CN)
+        .options(DIRECTORY_LOC_GLOBAL, DIRECTORY_LOC_USGOV, DIRECTORY_LOC_CN)
         .index(3)
         .build(),
       PropertyDefinition.builder(ENABLE_CLIENT_CRED)
@@ -201,14 +198,9 @@ public class AadSettings {
     Optional<String> directoryLocation = config.get(DIRECTORY_LOCATION);
 
     if(directoryLocation.isPresent()) {
-      switch (directoryLocation.get()) {
-        case DIRECTORY_LOC_USGOV:
-          return LOGIN_URL_USGOV;
-
-        case DIRECTORY_LOC_DE:
-          return LOGIN_URL_DE;
-
-        case DIRECTORY_LOC_CN:
+      if (directoryLocation.get().equals(DIRECTORY_LOC_USGOV)) {
+        return LOGIN_URL_USGOV;
+      } else if (directoryLocation.get().equals(DIRECTORY_LOC_CN)) {
           return LOGIN_URL_CN;
       }
     }
@@ -229,15 +221,10 @@ public class AadSettings {
     Optional<String> directoryLocation = config.get(DIRECTORY_LOCATION);
 
     if(directoryLocation.isPresent()) {
-      switch (directoryLocation.get()) {
-        case DIRECTORY_LOC_USGOV:
-          return GRAPH_URL_USGOV;
-
-        case DIRECTORY_LOC_DE:
-          return GRAPH_URL_DE;
-
-        case DIRECTORY_LOC_CN:
-          return GRAPH_URL_CN;
+      if (directoryLocation.get().equals(DIRECTORY_LOC_USGOV)) {
+        return GRAPH_URL_USGOV;
+      } else if (directoryLocation.get().equals(DIRECTORY_LOC_CN)) {
+        return GRAPH_URL_CN;
       }
     }
 
