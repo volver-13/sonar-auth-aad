@@ -2,7 +2,7 @@
  * Azure Active Directory Authentication Plugin for SonarQube
  * <p>
  * Copyright (c) 2016 Microsoft Corporation
- * All rights reserved.
+ * Copyright (c) 2022 Michael Johnson
  * <p>
  * The MIT License (MIT)
  * <p>
@@ -34,7 +34,6 @@ import org.sonar.api.config.Configuration;
 import org.sonar.api.config.PropertyDefinition;
 import org.sonar.api.server.ServerSide;
 
-import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static org.sonar.api.PropertyType.*;
 
@@ -51,10 +50,6 @@ public class AadSettings {
   protected static final String DIRECTORY_LOC_CN = "Azure AD China";
   protected static final String ENABLE_GROUPS_SYNC = "sonar.auth.aad.enableGroupsSync";
   protected static final String ENABLE_CLIENT_CRED = "sonar.auth.aad.enableClientCredential";
-  protected static final String LOGIN_STRATEGY = "sonar.auth.aad.loginStrategy";
-  protected static final String LOGIN_STRATEGY_UNIQUE = "Unique";
-  protected static final String LOGIN_STRATEGY_PROVIDER_ID = "Same as Azure AD login";
-  protected static final String LOGIN_STRATEGY_DEFAULT_VALUE = LOGIN_STRATEGY_UNIQUE;
   protected static final String MULTI_TENANT = "sonar.auth.aad.multiTenant";
 
   protected static final String CATEGORY = "aad";
@@ -65,14 +60,13 @@ public class AadSettings {
   protected static final String LOGIN_URL = "https://login.microsoftonline.com";
   protected static final String LOGIN_URL_USGOV = "https://login.microsoftonline.us";
   protected static final String LOGIN_URL_CN = "https://login.chinacloudapi.cn";
-  protected static final String AUTHORIZATION_URL = "oauth2/authorize";
-  protected static final String AUTHORITY_URL = "oauth2/token";
+  protected static final String AUTHORIZATION_URL = "oauth2/v2.0/authorize";
+  protected static final String AUTHORITY_URL = "oauth2/v2.0/token";
   protected static final String COMMON_URL = "common";
 
   protected static final String GRAPH_URL = "https://graph.microsoft.com";
   protected static final String GRAPH_URL_USGOV = "https://graph.microsoft.com";
   protected static final String GRAPH_URL_CN = "https://microsoftgraph.chinacloudapi.cn";
-  protected static final String AUTH_REQUEST_FORMAT = "%s?client_id=%s&response_type=code&redirect_uri=%s&state=%s&scope=openid";
   protected static final String GROUPS_REQUEST_FORMAT = "/v1.0/%s/users/%s/transitiveMemberOf";
 
   private final Configuration config;
@@ -128,28 +122,20 @@ public class AadSettings {
         .defaultValue(valueOf(false))
         .index(1)
         .build(),
-      PropertyDefinition.builder(LOGIN_STRATEGY)
-        .category(CATEGORY)
-        .subCategory(SUBCATEGORY_ADVANCED)
-        .type(SINGLE_SELECT_LIST)
-        .defaultValue(LOGIN_STRATEGY_DEFAULT_VALUE)
-        .options(LOGIN_STRATEGY_UNIQUE, LOGIN_STRATEGY_PROVIDER_ID)
-        .index(2)
-        .build(),
       PropertyDefinition.builder(DIRECTORY_LOCATION)
         .category(CATEGORY)
         .subCategory(SUBCATEGORY_ADVANCED)
         .type(SINGLE_SELECT_LIST)
         .defaultValue(DIRECTORY_LOC_GLOBAL)
         .options(DIRECTORY_LOC_GLOBAL, DIRECTORY_LOC_USGOV, DIRECTORY_LOC_CN)
-        .index(3)
+        .index(2)
         .build(),
       PropertyDefinition.builder(ENABLE_CLIENT_CRED)
         .category(CATEGORY)
         .subCategory(SUBCATEGORY_ADVANCED)
         .type(BOOLEAN)
         .defaultValue(valueOf(false))
-        .index(4)
+        .index(3)
         .build()
     );
   }
@@ -183,7 +169,7 @@ public class AadSettings {
   }
 
   public boolean isEnabled() {
-    return config.getBoolean(ENABLED).orElse(Boolean.FALSE) && clientId().isPresent() && clientSecret().isPresent() && loginStrategy().isPresent();
+    return config.getBoolean(ENABLED).orElse(Boolean.FALSE) && clientId().isPresent() && clientSecret().isPresent();
   }
 
   private String getEndpoint() {
@@ -207,6 +193,13 @@ public class AadSettings {
 
     //This is the default "global" URL and will be returned if none of the special locations are selected.
     return LOGIN_URL;
+  }
+
+  // I don't like hard-coding a key URL, but there's not a good way I can find
+  // to load quickly from the OIDC discovery URL. This should work for
+  // both national clouds and the general cloud for both tenant and common.
+  public String jwkKeysUrl() {
+    return String.format("%s/%s/discovery/keys", getLoginHost(), getEndpoint());
   }
 
   public String authorizationUrl() {
@@ -234,9 +227,5 @@ public class AadSettings {
 
   public String getGraphMembershipUrl() {
     return getGraphURL() + GROUPS_REQUEST_FORMAT;
-  }
-
-  public Optional<String> loginStrategy() {
-    return config.get(LOGIN_STRATEGY);
   }
 }

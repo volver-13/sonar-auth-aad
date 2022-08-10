@@ -2,7 +2,7 @@
  * Azure Active Directory Authentication Plugin for SonarQube
  * <p>
  * Copyright (c) 2016 Microsoft Corporation
- * All rights reserved.
+ * Copyright (c) 2022 Michael Johnson
  * <p>
  * The MIT License (MIT)
  * <p>
@@ -42,7 +42,6 @@ public class AadSettingsTest {
   public void is_enabled() {
     settings.setProperty("sonar.auth.aad.clientId.secured", "id");
     settings.setProperty("sonar.auth.aad.clientSecret.secured", "secret");
-    settings.setProperty("sonar.auth.aad.loginStrategy", LOGIN_STRATEGY_DEFAULT_VALUE);
 
     settings.setProperty("sonar.auth.aad.enabled", true);
     assertThat(underTest.isEnabled()).isTrue();
@@ -55,33 +54,39 @@ public class AadSettingsTest {
   public void return_authorization_authority_url_for_single_tenant_azureAd_app() {
     settings.setProperty("sonar.auth.aad.multiTenant", "false");
     settings.setProperty("sonar.auth.aad.tenantId", "tenantId");
-    assertThat(underTest.authorizationUrl()).isEqualTo("https://login.microsoftonline.com/tenantId/oauth2/authorize");
-    assertThat(underTest.authorityUrl()).isEqualTo("https://login.microsoftonline.com/tenantId/oauth2/token");
+    assertThat(underTest.authorizationUrl()).isEqualTo("https://login.microsoftonline.com/tenantId/oauth2/v2.0/authorize");
+    assertThat(underTest.authorityUrl()).isEqualTo("https://login.microsoftonline.com/tenantId/oauth2/v2.0/token");
   }
 
   @Test
   public void return_authorization_authority_url_for_multi_tenant_azureAd_app() {
     settings.setProperty("sonar.auth.aad.multiTenant", "true");
-    assertThat(underTest.authorizationUrl()).isEqualTo("https://login.microsoftonline.com/common/oauth2/authorize");
-    assertThat(underTest.authorityUrl()).isEqualTo("https://login.microsoftonline.com/common/oauth2/token");
+    assertThat(underTest.authorizationUrl()).isEqualTo("https://login.microsoftonline.com/common/oauth2/v2.0/authorize");
+    assertThat(underTest.authorityUrl()).isEqualTo("https://login.microsoftonline.com/common/oauth2/v2.0/token");
   }
 
   @Test
   public void return_correct_urls() {
+    // This tenant ID is used for the JWK Keys URL. The below GUID was generated randomly and has no meaning outside testing.
+    settings.setProperty("sonar.auth.aad.tenantId", "6664a665-d25b-40ac-8ab4-e27b014c2464");
+
     //Azure Default "Global"
     settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_GLOBAL);
     assertThat(underTest.authorizationUrl()).startsWith("https://login.microsoftonline.com");
     assertThat(underTest.getGraphURL()).startsWith("https://graph.microsoft.com");
+    assertThat(underTest.jwkKeysUrl()).isEqualTo("https://login.microsoftonline.com/6664a665-d25b-40ac-8ab4-e27b014c2464/discovery/keys");
 
     //Azure US Gov
     settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_USGOV);
     assertThat(underTest.authorizationUrl()).startsWith("https://login.microsoftonline.us");
     assertThat(underTest.getGraphURL()).startsWith("https://graph.microsoft.com");
+    assertThat(underTest.jwkKeysUrl()).isEqualTo("https://login.microsoftonline.us/6664a665-d25b-40ac-8ab4-e27b014c2464/discovery/keys");
 
     //Azure China
     settings.setProperty("sonar.auth.aad.directoryLocation", DIRECTORY_LOC_CN);
     assertThat(underTest.authorizationUrl()).startsWith("https://login.chinacloudapi.cn");
     assertThat(underTest.getGraphURL()).startsWith("https://microsoftgraph.chinacloudapi.cn");
+    assertThat(underTest.jwkKeysUrl()).isEqualTo("https://login.chinacloudapi.cn/6664a665-d25b-40ac-8ab4-e27b014c2464/discovery/keys");
   }
 
   @Test
@@ -93,9 +98,9 @@ public class AadSettingsTest {
   @Test
   public void is_enabled_always_return_false_when_client_id_is_null() {
     settings.setProperty("sonar.auth.aad.enabled", true);
+    //noinspection ConstantConditions
     settings.setProperty("sonar.auth.aad.clientId.secured", (String) null);
     settings.setProperty("sonar.auth.aad.clientSecret.secured", "secret");
-    settings.setProperty("sonar.auth.aad.loginStrategy", LOGIN_STRATEGY_DEFAULT_VALUE);
 
     assertThat(underTest.isEnabled()).isFalse();
   }
@@ -104,15 +109,10 @@ public class AadSettingsTest {
   public void is_enabled_always_return_false_when_client_secret_is_null() {
     settings.setProperty("sonar.auth.aad.enabled", true);
     settings.setProperty("sonar.auth.aad.clientId.secured", "id");
+    //noinspection ConstantConditions
     settings.setProperty("sonar.auth.aad.clientSecret.secured", (String) null);
-    settings.setProperty("sonar.auth.aad.loginStrategy", LOGIN_STRATEGY_DEFAULT_VALUE);
 
     assertThat(underTest.isEnabled()).isFalse();
-  }
-
-  @Test
-  public void default_login_strategy_is_unique_login() {
-    assertThat(underTest.loginStrategy().orElse(null)).isEqualTo(AadSettings.LOGIN_STRATEGY_UNIQUE);
   }
 
   @Test
@@ -160,7 +160,7 @@ public class AadSettingsTest {
     // Just do a quick test with the global location to verify the URL is built properly
     settings.setProperty("sonar.auth.aad.directoryLocation", "Azure AD (Global)");
     settings.setProperty("sonar.auth.aad.tenantId", "    123e4567-e89b-12d3-a456-426655440000");
-    assertThat(underTest.authorityUrl()).isEqualTo("https://login.microsoftonline.com/123e4567-e89b-12d3-a456-426655440000/oauth2/token");
+    assertThat(underTest.authorityUrl()).isEqualTo("https://login.microsoftonline.com/123e4567-e89b-12d3-a456-426655440000/oauth2/v2.0/token");
   }
 
   @Test
@@ -174,6 +174,6 @@ public class AadSettingsTest {
 
   @Test
   public void definitions() {
-    assertThat(AadSettings.definitions()).hasSize(10);
+    assertThat(AadSettings.definitions()).hasSize(9);
   }
 }
