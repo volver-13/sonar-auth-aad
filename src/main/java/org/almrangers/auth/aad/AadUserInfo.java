@@ -73,13 +73,13 @@ public class AadUserInfo {
         JWTClaimsSet claims = idToken.getJWTClaimsSet();
 
         // User's OID. Used for grabbing group membership if that feature is enabled
-        if(!claims.getStringClaim("oid").isEmpty()) {
+        if(claims.getStringClaim("oid") != null) {
             this.userOid = claims.getStringClaim("oid");
         }
 
         // Display ID
         // Tries the "preferred username" first, and falls back to email
-        if(!claims.getStringClaim("preferred_username").isEmpty()) {
+        if(!"".equals(claims.getStringClaim("preferred_username")) && claims.getStringClaim("preferred_username") != null) {
             this.displayId = claims.getStringClaim("preferred_username");
         } else if(!claims.getStringClaim("email").isEmpty()) {
             this.displayId = claims.getStringClaim("email");
@@ -89,7 +89,7 @@ public class AadUserInfo {
         // Attempts to get the user's name from the name claim. AAD requires
         // this, so it can't be blank. To be safe, we still set a display
         // name if that claim isn't in the token for some reason.
-        if(!claims.getStringClaim("name").isEmpty()) {
+        if(!"".equals(claims.getStringClaim("name")) && claims.getStringClaim("name") != null) {
             this.displayName = claims.getStringClaim("name");
         } else {
             this.displayName = "No name provided";
@@ -97,9 +97,9 @@ public class AadUserInfo {
 
         // Email
         // Tries email first, and falls back to "preferred_username" if empty. This should work for most AAD installs.
-        if(!claims.getStringClaim("email").isEmpty()) {
+        if(!"".equals(claims.getStringClaim("email")) && claims.getStringClaim("email") != null) {
             this.userEmail = claims.getStringClaim("email");
-        } else if(!claims.getStringClaim("preferred_username").isEmpty()) {
+        } else if(claims.getStringClaim("preferred_username") != null) {
             this.userEmail = claims.getStringClaim("preferred_username");
         }
     }
