@@ -28,34 +28,23 @@
 package org.almrangers.auth.aad;
 
 import java.net.*;
-import java.util.Arrays;
-import java.util.HashSet;
 import java.util.concurrent.ExecutorService;
 import javax.servlet.http.HttpServletRequest;
 
-import com.nimbusds.jose.JOSEException;
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.jwk.source.JWKSource;
-import com.nimbusds.jose.jwk.source.RemoteJWKSet;
-import com.nimbusds.jose.proc.*;
 import com.nimbusds.jwt.JWT;
-import com.nimbusds.jwt.proc.ConfigurableJWTProcessor;
-import com.nimbusds.jwt.proc.DefaultJWTClaimsVerifier;
-import com.nimbusds.jwt.proc.DefaultJWTProcessor;
 import com.nimbusds.oauth2.sdk.*;
 import com.nimbusds.oauth2.sdk.auth.ClientSecretBasic;
 import com.nimbusds.oauth2.sdk.auth.Secret;
-import com.nimbusds.oauth2.sdk.http.HTTPResponse;
 import com.nimbusds.oauth2.sdk.id.ClientID;
 import com.nimbusds.oauth2.sdk.id.State;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
+import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import com.nimbusds.openid.connect.sdk.OIDCTokenResponse;
 import com.nimbusds.openid.connect.sdk.token.OIDCTokens;
 import org.sonar.api.server.ServerSide;
 import org.sonar.api.server.authentication.Display;
 import org.sonar.api.server.authentication.OAuth2IdentityProvider;
 import org.sonar.api.server.authentication.UnauthorizedException;
-import org.sonar.api.server.authentication.UserIdentity;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 
@@ -154,39 +143,22 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
             new AuthorizationCodeGrant(code, new URI(context.getCallbackUrl()))
         );
 
-        HTTPResponse tokenHTTPResp = tokenReq.toHTTPRequest().send();
-
         // Parse and check response
-        OIDCTokenResponse tokenResponse;
-
-        try {
-            tokenResponse = OIDCTokenResponse.parse(tokenHTTPResp);
-        } catch (ParseException e) {
-          //If we got an error in the token process, this will catch it and log the details.
-          if(!tokenHTTPResp.indicatesSuccess()) {
-            TokenErrorResponse tokenErrorResponse = TokenResponse.parse(tokenHTTPResp).toErrorResponse();
-
-            LOGGER.error("Issue getting authentication token. Returned error: "
-                + tokenErrorResponse.getErrorObject().getDescription());
-
-            throw new UnauthorizedException("Error when authenticating user. Please check the logs for more details.");
-          } else {
-            // Some other error happened, throw the error message directly.
-            throw new UnauthorizedException(e.getMessage());
-          }
-        }
+        OIDCTokenResponse tokenResponse = AadTokenHelper.extractTokenResponse(tokenReq.toHTTPRequest().send());
 
       OIDCTokens accessTokens = tokenResponse.getOIDCTokens();
 
       JWT idToken = accessTokens.getIDToken();
-      AccessToken userAccessToken = accessTokens.getAccessToken();
 
       AadUserInfo aadUser;
-      AccessToken accessToken = userAccessToken;
+      AccessToken accessToken; // The user's auth token as the default.
 
-      if (validateIdToken(idToken)) {
-        // If group sync is enabled and client credential flow is enabled,
-        // get a client access token we will use to fetch group membership
+      if (AadTokenHelper.validateIdToken(idToken, settings)) {
+
+        // Decide if we are going to use a user auth token or the client auth
+        // token. This is used for group sync for access to MS Graph. If client
+        // credential is enabled along with group sync, try to grab a client auth
+        // token. Otherwise we just set the token to the user token.
         if(settings.enableGroupSync() && settings.enableClientCredential()) {
           TokenRequest clientRequest = new TokenRequest(
               new URI(settings.authorityUrl()),
@@ -197,6 +169,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
               new ClientCredentialsGrant(),
               new Scope(settings.getGraphURL() + "/.default"));
 
+          // Parse and check response
           TokenResponse clientResponse = TokenResponse.parse(clientRequest.toHTTPRequest().send());
 
           // Client token request failed, log the error
@@ -204,10 +177,14 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
             TokenErrorResponse errorResponse = clientResponse.toErrorResponse();
             LOGGER.error("Issue in getting client token for group sync. Returned error: "
                 + errorResponse.getErrorObject().getDescription());
+            accessToken = new BearerAccessToken(); // Empty access token so we pass _something_.
           } else {
             AccessTokenResponse successResponse = clientResponse.toSuccessResponse();
             accessToken = successResponse.getTokens().getAccessToken();
           }
+        } else {
+          // Use the user's access token
+          accessToken = accessTokens.getAccessToken();
         }
 
         // NOTE: The Access token IS EITHER:
@@ -215,9 +192,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
         // The user's token if client credential flow fails or client flow is disabled
         aadUser = new AadUserInfo(idToken, accessToken, settings.enableGroupSync());
 
-        UserIdentity.Builder userIdentity = parseUserId(aadUser);
-
-        context.authenticate(userIdentity.build());
+        context.authenticate(aadUser.buildUserId(settings.enableGroupSync()).build());
 
         context.redirectToRequestedPage();
       }
@@ -230,55 +205,6 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
         service.shutdown();
       }
     }
-  }
-
-  private boolean validateIdToken(JWT idToken) throws MalformedURLException, BadJOSEException, JOSEException {
-
-    // Create a JWT processor for the access tokens
-    ConfigurableJWTProcessor<SecurityContext> jwtProcessor =
-        new DefaultJWTProcessor<>();
-
-    JWKSource<SecurityContext> keySource =
-        new RemoteJWKSet<>(new URL(settings.jwkKeysUrl()));
-
-    //MS uses RSA 256 to sign their JWTs
-    JWSAlgorithm expectedJWSAlg = JWSAlgorithm.RS256;
-
-    JWSKeySelector<SecurityContext> keySelector =
-        new JWSVerificationKeySelector<>(expectedJWSAlg, keySource);
-
-    jwtProcessor.setJWSKeySelector(keySelector);
-
-    // Verify the specific claims in the ID token. Confirm the audience matches
-    // the expected value (our Client ID), and that specific attributes are present.
-    // Note that this also automatically validates the various timestamp values
-    // to ensure the token is still valid.
-    jwtProcessor.setJWTClaimsSetVerifier(
-        new DefaultJWTClaimsVerifier<>(
-            settings.clientId().orElse(null),
-            null,
-            new HashSet<>(Arrays.asList("iss", "iat", "nbf", "exp", "oid", "name", "preferred_username", "sub", "tid"))
-        )
-    );
-
-    // Don't capture the output. This will throw an error if the token doesn't
-    // validate instead of returning true.
-    jwtProcessor.process(idToken, null);
-
-    return true; // If there was no exception thrown, then the token is valid
-  }
-
-  private UserIdentity.Builder parseUserId(AadUserInfo aadUser) {
-    UserIdentity.Builder userIdentityBuilder = UserIdentity.builder()
-        .setProviderLogin(aadUser.getDisplayId())
-        .setName(aadUser.getDisplayName())
-        .setEmail(aadUser.getUserEmail());
-
-    if (settings.enableGroupSync()) {
-      userIdentityBuilder.setGroups(aadUser.getUserGroups());
-    }
-
-    return userIdentityBuilder;
   }
 
 }

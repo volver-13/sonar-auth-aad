@@ -37,6 +37,7 @@ import com.nimbusds.jwt.JWT;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.oauth2.sdk.token.AccessToken;
 import okhttp3.Request;
+import org.sonar.api.server.authentication.UserIdentity;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import reactor.util.annotation.NonNull;
@@ -50,6 +51,10 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class AadUserInfo {
+    private final String USERNAME_CLAIM = "preferred_username";
+    private final String EMAIL_CLAIM = "email";
+    private final String DISPLAYNAME_CLAIM = "name";
+
     private String userOid;
     private String displayId;
     private String displayName;
@@ -79,30 +84,45 @@ public class AadUserInfo {
 
         // Display ID
         // Tries the "preferred username" first, and falls back to email
-        if(!"".equals(claims.getStringClaim("preferred_username")) && claims.getStringClaim("preferred_username") != null) {
-            this.displayId = claims.getStringClaim("preferred_username");
-        } else if(!claims.getStringClaim("email").isEmpty()) {
-            this.displayId = claims.getStringClaim("email");
+        if(!"".equals(claims.getStringClaim(USERNAME_CLAIM)) && claims.getStringClaim(USERNAME_CLAIM) != null) {
+            this.displayId = claims.getStringClaim(USERNAME_CLAIM);
+        } else if(!claims.getStringClaim(EMAIL_CLAIM).isEmpty()) {
+            this.displayId = claims.getStringClaim(EMAIL_CLAIM);
         }
 
         // Display Name
         // Attempts to get the user's name from the name claim. AAD requires
         // this, so it can't be blank. To be safe, we still set a display
         // name if that claim isn't in the token for some reason.
-        if(!"".equals(claims.getStringClaim("name")) && claims.getStringClaim("name") != null) {
-            this.displayName = claims.getStringClaim("name");
+        if(!"".equals(claims.getStringClaim(DISPLAYNAME_CLAIM)) && claims.getStringClaim(DISPLAYNAME_CLAIM) != null) {
+            this.displayName = claims.getStringClaim(DISPLAYNAME_CLAIM);
         } else {
             this.displayName = "No name provided";
         }
 
         // Email
-        // Tries email first, and falls back to "preferred_username" if empty. This should work for most AAD installs.
-        if(!"".equals(claims.getStringClaim("email")) && claims.getStringClaim("email") != null) {
-            this.userEmail = claims.getStringClaim("email");
-        } else if(claims.getStringClaim("preferred_username") != null) {
-            this.userEmail = claims.getStringClaim("preferred_username");
+        // Tries email first, and falls back to "preferred_username" if empty.
+        // This should work for most AAD installs.
+        if(!"".equals(claims.getStringClaim(EMAIL_CLAIM)) && claims.getStringClaim(EMAIL_CLAIM) != null) {
+            this.userEmail = claims.getStringClaim(EMAIL_CLAIM);
+        } else if(claims.getStringClaim(USERNAME_CLAIM) != null) {
+            this.userEmail = claims.getStringClaim(USERNAME_CLAIM);
         }
     }
+
+    public UserIdentity.Builder buildUserId(boolean includeGroups) {
+        UserIdentity.Builder userIdentityBuilder = UserIdentity.builder()
+            .setProviderLogin(getDisplayId())
+            .setName(getDisplayName())
+            .setEmail(getUserEmail());
+
+        if (includeGroups) {
+            userIdentityBuilder.setGroups(getUserGroups());
+        }
+
+        return userIdentityBuilder;
+    }
+
 
     private void processGroups(String accessToken) {
         Set<String> parsedUserGroups = new HashSet<>();

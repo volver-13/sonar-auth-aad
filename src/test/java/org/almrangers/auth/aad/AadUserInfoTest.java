@@ -35,6 +35,7 @@ import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
 import org.junit.Before;
 import org.junit.Test;
+import org.sonar.api.server.authentication.UserIdentity;
 
 public class AadUserInfoTest {
 
@@ -86,6 +87,20 @@ public class AadUserInfoTest {
         userInfo = new AadUserInfo(testIdTokenNoUsername, new BearerAccessToken(), false);
 
         assertThat(userInfo.getDisplayId()).isEqualTo(testUserMail);
+    }
+
+    @Test
+    public void returns_user_id_builder() throws ParseException {
+        userInfo = new AadUserInfo(testIdToken, new BearerAccessToken(), false);
+
+        UserIdentity userId = userInfo.buildUserId(true).build();
+
+        assertThat(userId.getEmail()).isEqualTo(testUserMail);
+        assertThat(userId.getName()).isEqualTo(testUserName);
+
+        // Since no groups were passed in to build the user,
+        // getting the groups should return an empty set.
+        assertThat(userId.getGroups()).isEqualTo(Collections.emptySet());
     }
 
     @Before

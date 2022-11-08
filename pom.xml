@@ -139,6 +139,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>mockwebserver</artifactId>
+            <version>4.10.0</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -165,7 +171,7 @@
             <plugin>
                 <groupId>org.sonarsource.sonar-packaging-maven-plugin</groupId>
                 <artifactId>sonar-packaging-maven-plugin</artifactId>
-                <version>1.20.0.405</version>
+                <version>1.21.0.505</version>
                 <extensions>true</extensions>
                 <configuration>
                     <pluginClass>org.almrangers.auth.aad.AuthAadPlugin</pluginClass>
