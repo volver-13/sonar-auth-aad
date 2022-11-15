@@ -41,6 +41,7 @@ import org.sonar.api.server.authentication.UserIdentity;
 import org.sonar.api.utils.log.Logger;
 import org.sonar.api.utils.log.Loggers;
 import reactor.util.annotation.NonNull;
+import reactor.util.annotation.Nullable;
 
 import java.net.URL;
 import java.text.ParseException;
@@ -125,8 +126,6 @@ public class AadUserInfo {
 
 
     private void processGroups(String accessToken) {
-        Set<String> parsedUserGroups = new HashSet<>();
-
         // We already have the auth code, so create a custom provider that will
         // return the code to our graph client.
         IAuthenticationProvider graphAuthProvider = new IAuthenticationProvider() {
@@ -154,27 +153,8 @@ public class AadUserInfo {
                     .top(999) // Maximum page size of 999 to reduce number of requests.
                     .get();
 
-            while(memberGroupCollection != null) {
-                final List<DirectoryObject> groupList = memberGroupCollection.getCurrentPage();
+            Set<String> parsedUserGroups = processMemberGroupCollection(memberGroupCollection);
 
-                for ( DirectoryObject group : groupList) {
-                    String groupDisplayName = ((Group) group).displayName;
-
-                    // Don't add the group if the display name is null
-                    if(groupDisplayName != null) {
-                        parsedUserGroups.add(groupDisplayName);
-                    }
-                }
-
-                final DirectoryObjectCollectionWithReferencesRequestBuilder nextPage = memberGroupCollection.getNextPage();
-                if (nextPage == null) {
-                    break;
-                } else {
-                    memberGroupCollection = nextPage.buildRequest().get();
-                }
-            }
-
-            // Log a warning if we were asked to parse groups but couldn't
             if(parsedUserGroups.isEmpty()) {
                 LOGGER.warn("Group list was empty. Maybe your AAD permissions aren't set correctly?");
             }
@@ -184,6 +164,32 @@ public class AadUserInfo {
             // Post the error to the logs, don't consider this fatal (fail auth)
             LOGGER.error("Group Membership Request failed with error: " + e.getMessage());
         }
+    }
+
+    Set<String> processMemberGroupCollection(@Nullable DirectoryObjectCollectionWithReferencesPage memberGroupCollection) {
+        Set<String> parsedUserGroups = new HashSet<>();
+
+        while(memberGroupCollection != null) {
+            final List<DirectoryObject> groupList = memberGroupCollection.getCurrentPage();
+
+            for ( DirectoryObject group : groupList) {
+                String groupDisplayName = ((Group) group).displayName;
+
+                // Don't add the group if the display name is null
+                if(groupDisplayName != null) {
+                    parsedUserGroups.add(groupDisplayName);
+                }
+            }
+
+            final DirectoryObjectCollectionWithReferencesRequestBuilder nextPage = memberGroupCollection.getNextPage();
+            if (nextPage == null) {
+                break;
+            } else {
+                memberGroupCollection = nextPage.buildRequest().get();
+            }
+        }
+
+        return parsedUserGroups;
     }
 
     public String getDisplayId() {

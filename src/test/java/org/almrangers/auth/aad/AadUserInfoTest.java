@@ -30,6 +30,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.text.ParseException;
 import java.util.*;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.microsoft.graph.logger.DefaultLogger;
+import com.microsoft.graph.requests.DirectoryObjectCollectionResponse;
+import com.microsoft.graph.requests.DirectoryObjectCollectionWithReferencesPage;
+import com.microsoft.graph.serializer.DefaultSerializer;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.PlainJWT;
 import com.nimbusds.oauth2.sdk.token.BearerAccessToken;
@@ -54,6 +60,9 @@ public class AadUserInfoTest {
     PlainJWT testIdTokenNoMail;
     PlainJWT testIdTokenNoUsername;
     AadUserInfo userInfo;
+
+    // A group object for testing the group parser
+    DirectoryObjectCollectionWithReferencesPage memberGroupCollection;
 
     @Test
     public void test_token_parsing() throws ParseException {
@@ -103,8 +112,32 @@ public class AadUserInfoTest {
         assertThat(userId.getGroups()).isEqualTo(Collections.emptySet());
     }
 
+    @Test
+    // This tests that parsing will still work without errors in the event that the
+    // group fetch doesn't work. For this test, it's because of an invalid token.
+    public void test_empty_group_parsing() throws ParseException {
+        userInfo = new AadUserInfo(testIdToken, new BearerAccessToken(), true);
+
+        assertThat(userInfo).isInstanceOf(AadUserInfo.class);
+        assertThat(userInfo.getUserGroups()).isEqualTo(Collections.emptySet());
+    }
+
+    @Test
+    public void parse_member_groups() throws ParseException {
+        Set<String> expectedGroups = new HashSet<>(Arrays.asList("Administrators", "Developers"));
+
+        userInfo = new AadUserInfo(testIdToken, new BearerAccessToken(), false);
+
+        Set<String> memberships = userInfo.processMemberGroupCollection(memberGroupCollection);
+
+        assertThat(memberships).isEqualTo(expectedGroups);
+    }
+
     @Before
     public void setUp() {
+        // Build the object for parsing AAD Group Responses
+        createAadGroupResponse();
+
         // Get current date/time for the test token
         Calendar testCalendar = Calendar.getInstance();
         Date currentTestDate = testCalendar.getTime();
@@ -188,5 +221,33 @@ public class AadUserInfoTest {
                 .claim("uti", "8UZ2eBjwiUDNU_LQSTJWAA")
                 .claim("ver", "2.0")
                 .build());
+    }
+
+    void createAadGroupResponse() {
+        // This object is a direct copy of the MS Graph response with the ID
+        // being changed from the real value.
+        JsonObject jsonObj = new Gson().fromJson("{\n" +
+                "  \"@odata.context\": \"https://graph.microsoft.com/v1.0/$metadata#directoryObjects(id,displayName)\",\n" +
+                "  \"value\": [\n" +
+                "    {\n" +
+                "      \"@odata.type\": \"#microsoft.graph.group\",\n" +
+                "      \"id\": \"89fb503f-134f-43cd-aaa7-f21facb2eca3\",\n" +
+                "      \"displayName\": \"Developers\"\n" +
+                "    },\n" +
+                "    {\n" +
+                "      \"@odata.type\": \"#microsoft.graph.group\",\n" +
+                "      \"id\": \"d595c0e2-28f4-4a52-8ec5-58eab17309f8\",\n" +
+                "      \"displayName\": \"Administrators\"\n" +
+                "    }\n" +
+                "  ]\n" +
+                "}",
+            JsonObject.class);
+
+        DefaultSerializer serializer = new DefaultSerializer(new DefaultLogger());
+
+        DirectoryObjectCollectionResponse memberResponse = serializer.deserializeObject(jsonObj, DirectoryObjectCollectionResponse.class);
+
+        assert memberResponse != null;
+        memberGroupCollection = new DirectoryObjectCollectionWithReferencesPage(memberResponse, null);
     }
 }
