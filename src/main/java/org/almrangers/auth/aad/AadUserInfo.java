@@ -52,9 +52,6 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 public class AadUserInfo {
-    private final String USERNAME_CLAIM = "preferred_username";
-    private final String EMAIL_CLAIM = "email";
-    private final String DISPLAYNAME_CLAIM = "name";
 
     private String userOid;
     private String displayId;
@@ -76,6 +73,11 @@ public class AadUserInfo {
     }
 
     private void parseToken(JWT idToken) throws ParseException {
+        // These are the names of the ID token claims we use below.
+        final String USERNAME_CLAIM = "preferred_username";
+        final String EMAIL_CLAIM = "email";
+        final String DISPLAYNAME_CLAIM = "name";
+
         JWTClaimsSet claims = idToken.getJWTClaimsSet();
 
         // User's OID. Used for grabbing group membership if that feature is enabled

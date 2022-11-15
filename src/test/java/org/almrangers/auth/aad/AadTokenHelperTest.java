@@ -49,7 +49,6 @@ import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.server.authentication.UnauthorizedException;
 
 import java.io.IOException;
-import java.text.ParseException;
 import java.util.Calendar;
 import java.util.Date;
 
