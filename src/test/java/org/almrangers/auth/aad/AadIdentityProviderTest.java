@@ -27,22 +27,21 @@
 package org.almrangers.auth.aad;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertThrows;
 import static org.mockito.Mockito.*;
 
 import okhttp3.HttpUrl;
-import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.ExpectedException;
 import org.mockito.ArgumentCaptor;
 import org.sonar.api.config.internal.MapSettings;
 import org.sonar.api.server.authentication.OAuth2IdentityProvider;
+import org.sonar.api.server.authentication.UnauthorizedException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 
 public class AadIdentityProviderTest {
 
-  @Rule
-  public ExpectedException thrown = ExpectedException.none();
   MapSettings settings = new MapSettings();
   AadSettings aadSettings = new AadSettings(settings.asConfig());
   AadIdentityProvider underTest = spy(new AadIdentityProvider(aadSettings));
@@ -53,6 +52,23 @@ public class AadIdentityProviderTest {
     assertThat(underTest.getName()).isEqualTo("Microsoft");
     assertThat(underTest.getDisplay().getIconPath()).isEqualTo("/static/authaad/ms-symbol.svg");
     assertThat(underTest.getDisplay().getBackgroundColor()).isEqualTo("#2F2F2F");
+  }
+
+  @Test
+  // This test simulates trying to log in but getting a bad "code" from the
+  // auth process, causing the request for auth and id tokens to fail.
+  public void fail_login_on_bad_auth_code() {
+    setSettings(true);
+    OAuth2IdentityProvider.CallbackContext context = mock(OAuth2IdentityProvider.CallbackContext.class);
+    HttpServletRequest request = mock(HttpServletRequest.class);
+
+    when(request.getParameter("code")).thenReturn("9Q4mHqIAmAHORqpwwUaAxnGh");
+    when(context.getRequest()).thenReturn(request);
+
+    assertThrows(UnauthorizedException.class,
+        () -> underTest.onCallback(context)
+    );
+
   }
 
   @Test

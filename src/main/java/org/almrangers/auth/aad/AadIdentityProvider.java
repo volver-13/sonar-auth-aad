@@ -127,7 +127,7 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
     }
   }
 
-  private void onCallback(CallbackContext context) throws UnauthorizedException {
+  void onCallback(CallbackContext context) throws UnauthorizedException {
     context.verifyCsrfState();
 
     HttpServletRequest request = context.getRequest();
@@ -135,16 +135,16 @@ public class AadIdentityProvider implements OAuth2IdentityProvider {
     ExecutorService service = null;
 
     try {
-        TokenRequest tokenReq = new TokenRequest(
-            new URI(settings.authorityUrl()),
-            new ClientSecretBasic(
-                new ClientID(settings.clientId().orElse(null)),
-                new Secret(settings.clientSecret().orElse(""))),
-            new AuthorizationCodeGrant(code, new URI(context.getCallbackUrl()))
-        );
+      TokenRequest tokenReq = new TokenRequest(
+          new URI(settings.authorityUrl()),
+          new ClientSecretBasic(
+              new ClientID(settings.clientId().orElse(null)),
+              new Secret(settings.clientSecret().orElse(""))),
+          new AuthorizationCodeGrant(code, new URI(context.getCallbackUrl()))
+      );
 
-        // Parse and check response
-        OIDCTokenResponse tokenResponse = AadTokenHelper.extractTokenResponse(tokenReq.toHTTPRequest().send());
+      // Parse and check response
+      OIDCTokenResponse tokenResponse = AadTokenHelper.extractTokenResponse(tokenReq.toHTTPRequest().send());
 
       OIDCTokens accessTokens = tokenResponse.getOIDCTokens();
 
