@@ -29,12 +29,13 @@ package org.almrangers.auth.aad;
 import org.junit.Test;
 import org.sonar.api.config.PropertyDefinitions;
 import org.sonar.api.config.internal.MapSettings;
+import org.sonar.api.utils.System2;
 
 import static org.almrangers.auth.aad.AadSettings.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class AadSettingsTest {
-  MapSettings settings = new MapSettings(new PropertyDefinitions(AadSettings.definitions()));
+  MapSettings settings = new MapSettings(new PropertyDefinitions(new System2(), AadSettings.definitions()));
 
   AadSettings underTest = new AadSettings(settings.asConfig());
 

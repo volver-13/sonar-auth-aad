@@ -83,7 +83,7 @@
         <dependency>
             <groupId>org.sonarsource.sonarqube</groupId>
             <artifactId>sonar-plugin-api</artifactId>
-            <version>7.9</version>
+            <version>8.9.0.43852</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -115,6 +115,12 @@
         </dependency>
 
         <!-- Test dependencies -->
+        <dependency>
+            <groupId>org.sonarsource.sonarqube</groupId>
+            <artifactId>sonar-plugin-api-impl</artifactId>
+            <version>8.9.0.43852</version>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.assertj</groupId>
             <artifactId>assertj-core</artifactId>
