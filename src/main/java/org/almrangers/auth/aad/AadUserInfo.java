@@ -174,12 +174,14 @@ public class AadUserInfo {
         while(memberGroupCollection != null) {
             final List<DirectoryObject> groupList = memberGroupCollection.getCurrentPage();
 
-            for ( DirectoryObject group : groupList) {
-                String groupDisplayName = ((Group) group).displayName;
+            for (DirectoryObject group : groupList) {
+                if (group instanceof Group) {
+                    String groupDisplayName = ((Group) group).displayName;
 
-                // Don't add the group if the display name is null
-                if(groupDisplayName != null) {
-                    parsedUserGroups.add(groupDisplayName);
+                    // Don't add the group if the display name is null
+                    if (groupDisplayName != null) {
+                        parsedUserGroups.add(groupDisplayName);
+                    }
                 }
             }
 
