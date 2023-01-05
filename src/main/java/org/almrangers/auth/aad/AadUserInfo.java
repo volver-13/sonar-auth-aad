@@ -85,12 +85,12 @@ public class AadUserInfo {
             this.userOid = claims.getStringClaim("oid");
         }
 
-        // Display ID
+        // Display ID (Used as the "Provider Login")
         // Tries the "preferred username" first, and falls back to email
         if(!"".equals(claims.getStringClaim(USERNAME_CLAIM)) && claims.getStringClaim(USERNAME_CLAIM) != null) {
-            this.displayId = claims.getStringClaim(USERNAME_CLAIM);
+            this.displayId = claims.getStringClaim(USERNAME_CLAIM).toLowerCase();
         } else if(!claims.getStringClaim(EMAIL_CLAIM).isEmpty()) {
-            this.displayId = claims.getStringClaim(EMAIL_CLAIM);
+            this.displayId = claims.getStringClaim(EMAIL_CLAIM).toLowerCase();
         }
 
         // Display Name
