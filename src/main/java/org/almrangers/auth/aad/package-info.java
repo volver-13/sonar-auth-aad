@@ -2,7 +2,7 @@
  * Azure Active Directory Authentication Plugin for SonarQube
  * <p>
  * Copyright (c) 2016 Microsoft Corporation
- * All rights reserved.
+ * Copyright (c) 2022 Michael Johnson
  * <p>
  * The MIT License (MIT)
  * <p>
